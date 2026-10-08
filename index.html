@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>e叶知秋授信平台 · 后台管理系统</title>
+<style>
+/* ================= Gentelella 风格基座 ================= */
+:root{
+  --side:#2A3F54; --side-hover:#33475c; --side-sub:#24364a;
+  --accent:#1ABB9C; --accent-d:#16a085;
+  --body:#F7F7F7; --panel:#ffffff; --line:#E6E9ED;
+  --ink:#333c46; --ink2:#73879C; --ink3:#93a5b8;
+  --red:#E74C3C; --orange:#F39C12; --blue:#3498DB; --purple:#9B59B6;
+  --shadow:0 1px 2px rgba(0,0,0,.06);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:"Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;background:var(--body);color:var(--ink);font-size:13px;line-height:1.55}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:13px;color:var(--ink)}
+a{color:var(--accent-d);text-decoration:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#c3ccd6;border-radius:5px}
+
+/* ================= 登录页 ================= */
+.login-wrap{display:none;min-height:100vh;background:linear-gradient(135deg,#1f3043 0%,#2A3F54 55%,#1ABB9C 140%);align-items:center;justify-content:center;padding:20px}
+.login-wrap.show{display:flex}
+.login-card{background:#fff;width:100%;max-width:400px;border-radius:8px;box-shadow:0 18px 50px rgba(0,0,0,.35);overflow:hidden}
+.login-head{background:var(--side);color:#fff;padding:26px 30px;text-align:center}
+.login-head .logo{width:52px;height:52px;border-radius:12px;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px}
+.login-head h1{font-size:20px;letter-spacing:1px}
+.login-head p{font-size:12px;opacity:.75;margin-top:4px}
+.login-body{padding:26px 30px 30px}
+.login-body .tip{background:#eafaf6;border:1px solid #bfe9de;color:#0f7a63;font-size:12px;border-radius:6px;padding:8px 12px;margin-bottom:16px}
+.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* ================= 主体框架 ================= */
+.app{display:none}
+.app.show{display:block}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:230px;background:var(--side);z-index:300;overflow-y:auto;transition:width .2s,left .2s}
+.side-brand{display:flex;align-items:center;gap:10px;padding:0 16px;height:56px;color:#fff;border-bottom:1px solid rgba(255,255,255,.08);background:#24364a}
+.side-brand .logo{width:32px;height:32px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex:none}
+.side-brand b{font-size:16px;letter-spacing:.5px;white-space:nowrap}
+.side-brand span{font-size:10px;opacity:.6;display:block;white-space:nowrap}
+.side-profile{display:flex;gap:10px;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:none}
+.side-profile .who{color:#fff;font-size:13px;font-weight:600}
+.side-profile .role{color:#8fa5ba;font-size:11px}
+.menu-sec{color:#6d86a0;font-size:10px;letter-spacing:2px;padding:14px 16px 6px}
+.menu-item{display:flex;align-items:center;gap:11px;padding:10px 16px;color:#c3d0de;font-size:13px;border:none;background:none;width:100%;text-align:left;transition:.15s;border-left:3px solid transparent}
+.menu-item svg{flex:none;opacity:.85}
+.menu-item:hover{background:var(--side-hover);color:#fff}
+.menu-item.on{background:var(--side-sub);color:#fff;border-left-color:var(--accent)}
+.menu-item.on svg{opacity:1}
+.menu-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;border-radius:9px;padding:1px 7px;font-weight:700}
+.side-foot{padding:12px 16px;border-top:1px solid rgba(255,255,255,.07);margin-top:8px}
+.side-foot button{background:none;border:1px solid rgba(255,255,255,.25);color:#c3d0de;font-size:12px;border-radius:4px;padding:5px 12px;width:100%}
+.side-foot button:hover{background:rgba(255,255,255,.1);color:#fff}
+
+.main{margin-left:230px;min-height:100vh;transition:margin .2s}
+.topbar{background:#fff;height:56px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 20px;position:sticky;top:0;z-index:200}
+.top-toggle{border:none;background:none;color:var(--ink2);padding:8px;border-radius:6px;display:flex}
+.top-toggle:hover{background:#f0f2f5}
+.top-search{flex:1;max-width:340px;position:relative}
+.top-search input{width:100%;border:1px solid var(--line);border-radius:20px;padding:7px 14px 7px 34px;background:#f7f8fa;outline:none}
+.top-search svg{position:absolute;left:11px;top:9px;color:var(--ink3)}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.top-ico{position:relative;color:var(--ink2);background:none;border:none;padding:6px;border-radius:6px;display:flex}
+.top-ico:hover{background:#f0f2f5;color:var(--ink)}
+.top-ico .dot{position:absolute;top:2px;right:2px;background:var(--red);color:#fff;font-size:9px;border-radius:8px;padding:0 4px;font-weight:700}
+.top-user{display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 8px;border-radius:6px;border:none;background:none}
+.top-user:hover{background:#f0f2f5}
+.top-user .avatar{width:30px;height:30px;font-size:12px}
+.top-user span{font-size:13px;color:var(--ink)}
+.dropdown{position:absolute;top:52px;right:16px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.14);width:190px;z-index:400;display:none}
+.dropdown.show{display:block}
+.dropdown button{display:block;width:100%;text-align:left;border:none;background:none;padding:10px 16px;font-size:13px;color:var(--ink)}
+.dropdown button:hover{background:#f4f8f7;color:var(--accent-d)}
+.dropdown hr{border:none;border-top:1px solid var(--line)}
+
+.content{padding:18px 22px 60px}
+.crumb{display:flex;align-items:center;gap:8px;color:var(--ink2);font-size:13px;margin-bottom:14px}
+.crumb b{color:var(--ink);font-weight:600}
+.crumb .sep{color:var(--ink3)}
+.crumb .right{margin-left:auto;display:flex;gap:8px}
+.page-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.page-title-row h2{font-size:19px;font-weight:600;color:var(--ink)}
+.page-title-row .sub{font-size:12px;color:var(--ink2);margin-top:2px}
+
+/* ================= 面板 ================= */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);margin-bottom:18px}
+.panel-h{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.panel-h h3{font-size:14px;font-weight:600;color:var(--ink)}
+.panel-h .sub{font-size:11px;color:var(--ink3);font-weight:400}
+.panel-h .tools{margin-left:auto;display:flex;gap:6px}
+.panel-b{padding:16px}
+.panel-b.flush{padding:0}
+
+/* ================= 统计卡片 ================= */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.stat-grid.g3{grid-template-columns:repeat(3,1fr)}
+.stat-grid.g6{grid-template-columns:repeat(6,1fr)}
+.stat{background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);padding:16px 18px;position:relative;overflow:hidden}
+.stat .ic{position:absolute;right:14px;top:14px;width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.stat .lb{color:var(--ink2);font-size:12px}
+.stat .vl{font-size:26px;font-weight:700;margin-top:4px;color:var(--ink);font-variant-numeric:tabular-nums}
+.stat .vl small{font-size:13px;color:var(--ink2);font-weight:500}
+.stat .ft{font-size:12px;margin-top:6px;color:var(--ink2)}
+.stat .ft .up{color:#1e9e6a;font-weight:600}.stat .ft .dn{color:var(--red);font-weight:600}
+.stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
+.stat.s2::before{background:var(--blue)}.stat.s3::before{background:var(--orange)}.stat.s4::before{background:var(--purple)}
+.stat.s5::before{background:var(--red)}.stat.s6::before{background:#5b7a99}
+
+/* ================= 表格 ================= */
+.tbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line);background:#fbfcfd}
+.tbar input[type=text],.tbar input[type=search]{border:1px solid var(--line);border-radius:5px;padding:7px 11px;width:220px;outline:none;background:#fff}
+.tbar input:focus{border-color:var(--accent)}
+.tbar select{border:1px solid var(--line);border-radius:5px;padding:7px 9px;background:#fff;outline:none}
+.tbar .grow{flex:1}
+table.gt{width:100%;border-collapse:collapse;font-size:13px}
+.gt th{background:#f5f7f9;color:#5a6b7e;font-weight:600;text-align:left;padding:10px 14px;border-bottom:2px solid var(--line);white-space:nowrap;user-select:none}
+.gt th.sortable{cursor:pointer}
+.gt th.sortable:hover{color:var(--accent-d)}
+.gt th .arr{font-size:9px;color:var(--ink3);margin-left:3px}
+.gt td{padding:10px 14px;border-bottom:1px solid #eef1f4;white-space:nowrap;font-variant-numeric:tabular-nums}
+.gt tbody tr:hover{background:#f6fbfa}
+.gt tbody tr:last-child td{border-bottom:none}
+.tfoot{display:flex;align-items:center;gap:10px;padding:12px 16px;flex-wrap:wrap}
+.tfoot .info{color:var(--ink2);font-size:12px}
+.pager{margin-left:auto;display:flex;gap:4px}
+.pager button{border:1px solid var(--line);background:#fff;color:var(--ink);min-width:30px;height:30px;border-radius:5px;font-size:12px;padding:0 8px}
+.pager button:hover:not(:disabled){border-color:var(--accent);color:var(--accent-d)}
+.pager button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.pager button:disabled{opacity:.4;cursor:not-allowed}
+
+/* ================= 标签/按钮/表单/页签 ================= */
+.tag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:10px;font-weight:600;white-space:nowrap}
+.tg-green{background:#e2f7ef;color:#12805c}.tg-red{background:#fdeceb;color:#c0392b}
+.tg-orange{background:#fef4e2;color:#b9770e}.tg-blue{background:#e8f1fb;color:#2470a8}
+.tg-gray{background:#eef1f4;color:#6b7b8c}.tg-purple{background:#f3e9f7;color:#7d3c98}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid transparent;border-radius:5px;font-size:13px;padding:7px 14px;font-weight:500;transition:.15s;background:#fff}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:var(--accent-d)}
+.btn-d{background:#fff;border-color:#d5dce3;color:var(--ink)}.btn-d:hover{border-color:var(--accent);color:var(--accent-d)}
+.btn-r{background:var(--red);color:#fff}.btn-r:hover{background:#c0392b}
+.btn-b{background:var(--blue);color:#fff}.btn-b:hover{background:#2470a8}
+.btn-w{background:var(--orange);color:#fff}.btn-w:hover{background:#b9770e}
+.btn-xs{padding:3px 9px;font-size:12px;border-radius:4px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.frow{margin-bottom:14px}
+.frow label{display:block;font-size:12px;color:var(--ink2);margin-bottom:5px;font-weight:600}
+.frow label .req{color:var(--red)}
+.frow input,.frow select,.frow textarea{width:100%;border:1px solid #d5dce3;border-radius:5px;padding:8px 11px;outline:none;background:#fff}
+.frow input:focus,.frow select:focus,.frow textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,188,156,.12)}
+.frow .err{color:var(--red);font-size:11px;margin-top:3px;display:none}
+.frow.bad input,.frow.bad select{border-color:var(--red)}
+.frow.bad .err{display:block}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:0;flex-wrap:wrap}
+.tabs button{border:none;background:none;padding:9px 16px;font-size:13px;color:var(--ink2);border-bottom:2px solid transparent;margin-bottom:-2px;font-weight:500}
+.tabs button:hover{color:var(--accent-d)}
+.tabs button.on{color:var(--accent-d);border-bottom-color:var(--accent);font-weight:700}
+.tabs button .cnt{background:#eef1f4;color:var(--ink2);font-size:10px;border-radius:8px;padding:1px 7px;margin-left:5px}
+.tabs button.on .cnt{background:var(--accent);color:#fff}
+
+/* ================= 弹窗/抽屉/提示 ================= */
+.mask{position:fixed;inset:0;background:rgba(30,45,60,.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:18px}
+.modal{background:#fff;border-radius:8px;box-shadow:0 16px 46px rgba(0,0,0,.3);width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;animation:mup .18s ease}
+@keyframes mup{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+.modal-h{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center}
+.modal-h b{font-size:15px}
+.modal-h .x{margin-left:auto;border:none;background:#f0f2f5;width:28px;height:28px;border-radius:6px;color:var(--ink2);font-size:14px}
+.modal-h .x:hover{background:#e3e8ee}
+.modal-b{padding:18px 20px;overflow-y:auto}
+.modal-f{padding:13px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(640px,100%);background:var(--body);z-index:490;box-shadow:-10px 0 34px rgba(0,0,0,.2);overflow-y:auto;animation:sin .2s ease}
+@keyframes sin{from{transform:translateX(50px);opacity:.5}to{transform:none;opacity:1}}
+.drawer-h{position:sticky;top:0;z-index:5;background:var(--side);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:10px}
+.drawer-h .x{margin-left:auto;border:none;background:rgba(255,255,255,.15);color:#fff;width:28px;height:28px;border-radius:6px}
+.drawer-b{padding:16px 20px 40px}
+.toasts{position:fixed;top:66px;right:18px;z-index:600;display:flex;flex-direction:column;gap:8px}
+.toast{background:#fff;border-left:4px solid var(--accent);border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,.16);padding:11px 16px;font-size:13px;min-width:240px;max-width:360px;animation:tin .2s ease;display:flex;gap:9px;align-items:center}
+.toast.err{border-left-color:var(--red)}
+@keyframes tin{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+
+/* ================= 详情/进度/时间线 ================= */
+.kv{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed #e8edf1;font-size:13px}
+.kv:last-child{border-bottom:none}
+.kv .k{color:var(--ink2)}.kv .v{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.prog{height:8px;background:#edf1f4;border-radius:99px;overflow:hidden}
+.prog>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.tline{position:relative;padding-left:26px}
+.tline:before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:#dbe4ec}
+.tl-item{position:relative;padding-bottom:16px}
+.tl-item .dot{position:absolute;left:-24px;top:3px;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #dbe4ec;background:var(--accent)}
+.tl-item .tm{font-size:11px;color:var(--ink3)}
+.tl-item b{font-size:13px}
+.tl-item p{font-size:12px;color:var(--ink2);margin-top:2px}
+.note{background:#fffbe9;border:1px solid #f3e6b3;border-radius:6px;padding:10px 14px;font-size:12px;color:#8a6d1a}
+.note.green{background:#eafaf6;border-color:#bfe9de;color:#0f7a63}
+.note.red{background:#fdeceb;border-color:#f5c6c0;color:#a93226}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink2);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.chart-tip{font-size:10px;fill:#8496a9}
+.empty{padding:40px;text-align:center;color:var(--ink3);font-size:13px}
+.formula{background:#f6fbf9;border:1px dashed #bfe0d3;border-radius:6px;padding:9px 13px;font-size:12.5px;color:#0f7a63;font-family:"Cambria Math",Georgia,serif}
+.perm-grid td,.perm-grid th{text-align:center}
+.perm-grid td:first-child,.perm-grid th:first-child{text-align:left}
+
+/* ================= 响应式 ================= */
+.mask-nav{display:none}
+@media(max-width:1080px){.stat-grid,.stat-grid.g6{grid-template-columns:repeat(2,1fr)}.stat-grid.g3{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}}
+@media(max-width:860px){
+  .sidebar{left:-230px}
+  .sidebar.open{left:0}
+  .mask-nav.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:290}
+  .main{margin-left:0}
+  .content{padding:14px 12px 60px}
+  .f2,.f3{grid-template-columns:1fr}
+  .gt th,.gt td{padding:8px 9px}
+  .top-search{display:none}
+  .stat-grid.g3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= 登录页 ================= -->
+<div class="login-wrap show" id="loginWrap">
+  <div class="login-card" id="loginCard">
+    <div class="login-head">
+      <div class="logo"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 21c-4.5-2.2-7-5.6-7-9.5C5 7 8 4 12 4s7 3 7 7.5c0 3.9-2.5 7.3-7 9.5Z" stroke="#fff" stroke-width="1.6"/><path d="M12 4v17M12 9c-2 1-3.5 1-5 .5M12 13c2-1 3.5-1 5-.5" stroke="#e6fff6" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+      <h1>e叶知秋授信平台</h1>
+      <p>基于"天眼+地账"双核核验的茶农收益穿透式评估与动态授信系统</p>
+    </div>
+    <div class="login-body">
+      <div class="tip">内置账号：<b>admin</b>（管理员）/ <b>lxf</b>（客户经理）/ <b>hzm</b>（风控主管）/ <b>cgp</b>（支行行长）/ <b>coop01</b>（合作社），密码均为 <b>123456</b></div>
+      <div class="frow" id="lgUserRow"><label>账号 <span class="req">*</span></label><input id="lgUser" type="text" placeholder="请输入账号" autocomplete="username" value="admin"><div class="err">请输入账号</div></div>
+      <div class="frow" id="lgPassRow"><label>密码 <span class="req">*</span></label><input id="lgPass" type="password" placeholder="请输入密码" autocomplete="current-password"><div class="err" id="lgPassErr">请输入密码</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-size:12px;color:var(--ink2)">
+        <label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="lgRemember" checked style="width:auto"> 记住登录状态</label>
+        <span>不同角色登录后菜单范围不同</span>
+      </div>
+      <button class="btn btn-p" style="width:100%;justify-content:center;padding:10px;font-size:14px" onclick="doLogin()">登 录</button>
+      <p style="text-align:center;font-size:11px;color:var(--ink3);margin-top:16px">安溪县铁观音主产区 · 感德 / 祥华 / 西坪三乡镇联网运行</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 后台主体 ================= -->
+<div class="app" id="app">
+  <div class="mask-nav" id="maskNav" onclick="toggleSide(false)"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="side-brand">
+      <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21c-4.5-2.2-7-5.6-7-9.5C5 7 8 4 12 4s7 3 7 7.5c0 3.9-2.5 7.3-7 9.5Z" stroke="#fff" stroke-width="1.8"/></svg></div>
+      <div><b>e叶知秋</b><span>茶农动态授信平台</span></div>
+    </div>
+    <div class="side-profile">
+      <div class="avatar" id="sideAvatar">行</div>
+      <div><div class="who" id="sideWho">系统管理员</div><div class="role" id="sideRole">合作银行A支行 · 风控部</div></div>
+    </div>
+    <nav id="menu"></nav>
+    <div class="side-foot"><button onclick="doLogout()">退出登录</button></div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="top-toggle" onclick="toggleSide()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <div class="top-search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="text" placeholder="搜索客户姓名 / 编号，回车跳转客户管理" onkeydown="if(event.key==='Enter')globalSearch(this.value)">
+      </div>
+      <div class="top-right">
+        <span style="font-size:12px;color:var(--ink2)" id="topDate"></span>
+        <button class="top-ico" title="待办审批" onclick="go('approval')"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 8h18s-3-1-3-8M10.3 21a2 2 0 0 0 3.4 0"/></svg><span class="dot" id="todoBadge">0</span></button>
+        <button class="top-user" onclick="document.getElementById('userDrop').classList.toggle('show')">
+          <div class="avatar" id="topAvatar">行</div><span id="topWho">系统管理员</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="dropdown" id="userDrop">
+      <button onclick="go('setting')" id="dropSetting">系统设置</button>
+      <button onclick="go('approval')">待办审批</button>
+      <hr>
+      <button onclick="doLogout()">退出登录</button>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div id="overlay"></div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* =====================================================================
+   e叶知秋授信平台 · Gentelella 风格单文件后台（功能完善扩展版）
+   ===================================================================== */
+'use strict';
+
+/* ---------- 基础工具 ---------- */
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s===undefined||s===null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmt(n){return Math.round(Number(n)||0).toLocaleString('zh-CN')}
+function fmtW(n){const v=Number(n)||0;return v>=10000?((v/10000).toFixed(v>=1000000?1:2)+'万'):fmt(v)}
+function today(){return '2026-10-04'}
+function addDays(d,n){const t=new Date(d+'T00:00:00');t.setDate(t.getDate()+n);return t.toISOString().slice(0,10)}
+function addMonths(d,n){const t=new Date(d+'T00:00:00');t.setMonth(t.getMonth()+n);return t.toISOString().slice(0,10)}
+function toast(msg,ok){const t=document.createElement('div');t.className='toast'+(ok===false?' err':'');t.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="'+(ok===false?'#E74C3C':'#1ABB9C')+'" stroke-width="2.4">'+(ok===false?'<path d="M12 8v5m0 3.5v.5"/><circle cx="12" cy="12" r="9.2"/>':'<path d="m4.5 12.5 5 5 10-11"/>')+'</svg><span>'+msg+'</span>';$('toasts').appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='.3s';setTimeout(()=>t.remove(),320)},2800)}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* ---------- 业务常量 ---------- */
+const TOWNS=['感德镇','祥华乡','西坪镇'];
+const VILLAGES={'感德镇':['槐川村','槐东村','大格村','洪佑村','岭西村'],'祥华乡':['祥地村','旧寨村','珍山村','白玉村'],'西坪镇':['尧阳村','柏叶村','松岩村']};
+const VCODE={'槐川村':'HC','槐东村':'HD','大格村':'DG','洪佑村':'HY','岭西村':'LX','祥地村':'XD','旧寨村':'JZ','珍山村':'ZS','白玉村':'BY','尧阳村':'YY','柏叶村':'BY','松岩村':'SY'};
+const TCODE={'感德镇':'GD','祥华乡':'XH','西坪镇':'XP'};
+const COOPS={'感德镇':'感德茶业合作社','祥华乡':'祥华铁观音合作社','西坪镇':'西坪茗茶合作社'};
+const TIERS=['粗放管理','中等管理','精细管理'];
+const PURPOSES=['茶园改造与品种更新','购置制茶设备','春茶采工工资','农资采购（肥料/农药）','初制所加工费周转','茶园流转扩种'];
+const APP_STATUS=['待初审','复核中','终审中','已通过','已拒绝','已放款'];
+const APP_CLS={'待初审':'tg-orange','复核中':'tg-blue','终审中':'tg-purple','已通过':'tg-green','已拒绝':'tg-red','已放款':'tg-green'};
+const ROUNDS=['春茶','夏茶','暑茶','秋茶','冬片'];
+const ROUND_PRICE={'春茶':168,'夏茶':96,'暑茶':74,'秋茶':142,'冬片':88};
+const GRADES=['特级','一级','二级','三级'];
+const GRADE_F={'特级':1.15,'一级':1.0,'二级':0.82,'三级':0.68};
+const WARN_TYPES=['双账显著不符','疑似虚报流水','疑似瞒报销售','申报面积偏差','疑似撂荒','一地多押嫌疑','灾损预警','还款逾期','额度使用率过高'];
+const WARN_SRC=['一级全量无感筛查','二级多源交叉比对','三级实地复核','遥感时序监测','气象联动','贷后定期排查','人工登记'];
+const ROLES=['系统管理员','客户经理','风控主管','支行行长','合作社操作员'];
+
+/* ---------- 预置业务数据 ---------- */
+function seedData(){
+  const rnd=mulberry32(20261004);
+  const NAMES=[['AX-GD-0017','陈志强','感德镇','槐川村',11.4,742,12,5,0.81],['AX-GD-0003','林建兴','感德镇','槐东村',9.8,758,9,4,0.63],['AX-GD-0008','王清海','感德镇','大格村',14.2,731,15,4,0.52],['AX-GD-0011','黄淑珍','感德镇','洪佑村',6.5,765,8,3,0.38],['AX-GD-0021','苏文彬','感德镇','岭西村',8.9,748,11,4,0.57],['AX-GD-0026','吴金水','感德镇','槐川村',12.6,736,10,5,0.74],['AX-GD-0034','张木生','感德镇','大格村',5.2,770,6,2,0.18],['AX-GD-0039','许丽芬','感德镇','洪佑村',10.3,744,13,4,0.49],['AX-XH-0042','周金榜','祥华乡','祥地村',19.8,691,16,5,0.72],['AX-XH-0019','郑国明','祥华乡','旧寨村',10.6,684,12,4,0.55],['AX-XH-0007','王秀兰','祥华乡','珍山村',11.2,702,11,4,0.61],['AX-XH-0015','陈金盾','祥华乡','白玉村',8.4,668,9,4,0.44],['AX-XH-0028','刘福全','祥华乡','祥地村',6.8,645,7,3,0.35],['AX-XH-0036','吴腾达','祥华乡','珍山村',13.5,710,13,5,0.69],['AX-XP-0088','王财旺','西坪镇','尧阳村',6.2,598,9,2,0.11],['AX-XP-0012','林明辉','西坪镇','柏叶村',10.8,602,12,4,0.58],['AX-XP-0023','陈秀凤','西坪镇','松岩村',8.2,588,10,4,0.47],['AX-XP-0041','陈昆山','西坪镇','松岩村',12.9,626,14,5,0.77],['AX-XP-0029','王建立','西坪镇','尧阳村',9.6,611,11,4,0.52],['AX-XH-0044','林水田','祥华乡','白玉村',7.6,660,8,3,0.41]];
+  const customers=NAMES.map((a,i)=>{
+    const tier=a[8]>=0.66?2:(a[8]>=0.36?1:0);
+    return {id:a[0],name:a[1],town:a[2],village:a[3],coop:COOPS[a[2]],area:a[4],alt:a[5],treeAge:a[6],rounds:a[7],M:a[8],tier:tier,
+      d:+(0.05+a[8]*0.17).toFixed(3),r:+(0.01+a[8]*0.042).toFixed(3),
+      phone:'13'+String(850000000+Math.floor(rnd()*99999999)),
+      idcard:'35052419'+(60+Math.floor(rnd()*35))+String(10+Math.floor(rnd()*89))+String(1000+Math.floor(rnd()*8999)),
+      joinDate:addDays('2025-11-12',i*3),status:'正常'};
+  });
+  /* 茶园地块（一地一码） */
+  const plots=[];let pn=1;
+  customers.forEach((c,i)=>{
+    const areaD=+(c.area*(c.id==='AX-GD-0011'?1.51:(c.id==='AX-XP-0088'?1.52:(1+rnd()*0.06)))).toFixed(1);
+    plots.push({id:TCODE[c.town]+'-'+VCODE[c.village]+'-'+String(101+pn++).slice(1),cid:c.id,areaR:c.area,areaD:areaD,alt:c.alt,treeAge:c.treeAge,owner:'承包经营权在册',buildDate:c.joinDate,status:i===6?'疑似撂荒':'正常'});
+    if(i%5===1)plots.push({id:TCODE[c.town]+'-'+VCODE[c.village]+'-'+String(101+pn++).slice(1),cid:c.id,areaR:+(c.area*0.32).toFixed(1),areaD:+(c.area*0.34).toFixed(1),alt:c.alt+8,treeAge:c.treeAge-2,owner:'承包经营权在册',buildDate:c.joinDate,status:'正常'});
+  });
+  /* 授信额度 */
+  const credits=[];
+  const creditsDef=[['AX-GD-0017',28000,2400,'2026-01-10'],['AX-GD-0003',23000,0,'2026-01-10'],['AX-GD-0008',29000,0,'2026-01-11'],['AX-GD-0011',11000,0,'2026-01-11'],['AX-GD-0021',20000,0,'2026-01-12'],['AX-GD-0026',33500,1800,'2026-01-12'],['AX-GD-0034',5000,0,'2026-01-13'],['AX-GD-0039',19000,0,'2026-01-13'],['AX-XH-0042',18500,0,'2026-02-20'],['AX-XH-0019',26500,0,'2026-01-14'],['AX-XH-0007',24500,0,'2026-01-14'],['AX-XH-0015',13500,0,'2026-01-15'],['AX-XH-0028',8000,0,'2026-01-15'],['AX-XH-0036',31000,0,'2026-01-16'],['AX-XP-0012',19500,0,'2026-01-17'],['AX-XP-0023',14500,0,'2026-01-17'],['AX-XP-0041',32500,0,'2026-01-18'],['AX-XP-0029',18000,0,'2026-03-05']];
+  creditsDef.forEach((c,i)=>{
+    const cu=customers.find(x=>x.id===c[0]);
+    const spread=cu.tier===2?0.55:(cu.tier===1?1.20:1.70);
+    const total=c[1]+c[2];
+    const used=Math.round(total*(0.25+rnd()*0.55)/100)*100;
+    credits.push({id:'CR'+(260100+i),cid:c[0],base:c[1],dynAdd:c[2],total:total,used:used,rate:+(3.45+spread).toFixed(2),
+      grantDate:c[3],expireDate:addMonths(c[3],12),status:c[0]==='AX-XH-0019'?'展期中':'正常',term:12});
+  });
+  /* 授信申请 */
+  const apps=[];
+  const appDef=[['AX-XP-0029',25000,'茶园改造与品种更新',12,'2026-02-28','已放款'],['AX-XH-0042',40000,'购置制茶设备',12,'2026-02-10','已放款'],['AX-GD-0017',30000,'购置制茶设备',12,'2026-01-06','已放款'],['AX-GD-0026',35000,'茶园流转扩种',12,'2026-01-07','已放款'],['AX-XH-0036',32000,'茶园改造与品种更新',12,'2026-01-08','已放款'],['AX-XP-0041',33000,'初制所加工费周转',12,'2026-01-09','已放款'],['AX-XP-0088',45000,'茶园流转扩种',24,'2026-01-12','已拒绝'],['AX-GD-0003',25000,'农资采购（肥料/农药）',12,'2026-01-05','已放款'],['AX-XH-0019',28000,'春茶采工工资',12,'2026-01-06','已放款'],['AX-XP-0012',20000,'农资采购（肥料/农药）',12,'2026-01-08','已放款'],['AX-GD-0039',20000,'春茶采工工资',12,'2026-09-28','待初审'],['AX-XH-0007',26000,'购置制茶设备',12,'2026-09-29','复核中'],['AX-GD-0021',22000,'农资采购（肥料/农药）',12,'2026-09-30','终审中'],['AX-XP-0023',16000,'初制所加工费周转',12,'2026-10-01','待初审'],['AX-GD-0011',12000,'春茶采工工资',12,'2026-10-02','待初审'],['AX-XH-0015',15000,'农资采购（肥料/农药）',12,'2026-10-02','复核中'],['AX-GD-0034',8000,'农资采购（肥料/农药）',12,'2026-10-03','待初审'],['AX-XH-0028',9000,'春茶采工工资',12,'2026-10-03','待初审'],['AX-XH-0044',11000,'购置制茶设备',12,'2026-10-04','待初审'],['AX-GD-0008',30000,'茶园改造与品种更新',24,'2026-10-04','复核中']];
+  appDef.forEach((a,i)=>{
+    apps.push({id:'SQ'+(2026000+i+1),cid:a[0],amount:a[1],purpose:a[2],term:a[3],date:a[4],status:a[5],
+      channel:i%3===0?'农户移动端':'合作社批量',node:a[5]==='待初审'?1:(a[5]==='复核中'?2:(a[5]==='终审中'?3:0))});
+  });
+  /* 审批流水 */
+  const flows=[];let fid=1;
+  apps.forEach(a=>{
+    if(a.status==='待初审')return;
+    const cu=customers.find(x=>x.id===a.cid);
+    flows.push({id:fid++,appId:a.id,node:'初审',op:'林晓峰（客户经理）',act:'通过',time:a.date+' 10:'+String(10+fid%49),comment:'双账核验一致，Δ 在容差带内，材料齐全。'});
+    if(a.status==='复核中')return;
+    flows.push({id:fid++,appId:a.id,node:'复核',op:'黄志明（风控主管）',act:'通过',time:addDays(a.date,1)+' 14:'+String(10+fid%49),comment:'天眼指纹 '+cu.rounds+' 轮，管理强度 M='+cu.M.toFixed(2)+'，同意上报终审。'});
+    if(a.status==='终审中')return;
+    if(a.status==='已拒绝'){flows.push({id:fid++,appId:a.id,node:'终审',op:'陈国平（支行行长）',act:'拒绝',time:addDays(a.date,2)+' 09:32',comment:'Δ=+1.97 远超三级阈值，产能弱流水虚且存在一地多押嫌疑，自动拦截移交人工核查。'});return}
+    flows.push({id:fid++,appId:a.id,node:'终审',op:'陈国平（支行行长）',act:'通过',time:addDays(a.date,2)+' 11:'+String(10+fid%49),comment:'同意放款，受托支付至农资供应商与采工工资账户。'});
+    flows.push({id:fid++,appId:a.id,node:'放款',op:'系统',act:'放款',time:addDays(a.date,3)+' 09:00',comment:'额度已生效，收购款归行自动回笼还款。'});
+  });
+  /* 交售台账（地账·磅秤采集） */
+  const sales=[];let sn=1;
+  const saleRounds=[['春茶','2026-04'],['夏茶','2026-06'],['暑茶','2026-08'],['秋茶','2026-10']];
+  customers.forEach((c,ci)=>{
+    if(c.rounds<2)return;
+    const rhat=c.area*62*(0.38+0.40*c.M)*105.6*(0.80+0.34*c.M);
+    const is88=c.id==='AX-XP-0088';
+    const yearTarget=rhat*(is88?2.9:(0.86+mulberry32(ci*13+5)()*0.22));
+    const useR=is88?[0,0,0]:[0,1,2,3].slice(0,Math.min(4,c.rounds));
+    const wsum=useR.reduce((s,ri)=>s+[0.42,0.18,0.12,0.28][ri],0);
+    useR.forEach((ri,k)=>{
+      const rr=mulberry32(ci*71+ri*17+3);
+      const grade=c.tier===2?(rr()<0.6?'特级':'一级'):(c.tier===1?(rr()<0.5?'一级':'二级'):(rr()<0.5?'二级':'三级'));
+      const price=Math.round(ROUND_PRICE[saleRounds[ri][0]]*GRADE_F[grade]*(is88?1.32:(0.96+rr()*0.08)));
+      const amt=Math.round(yearTarget*[0.42,0.18,0.12,0.28][ri]/wsum);
+      const net=Math.round(amt/price*2)/2;
+      const day=is88?(12+k*5):(3+Math.floor(rr()*22));
+      const date=saleRounds[ri][1]+'-'+String(Math.min(day,28)).padStart(2,'0');
+      const time=is88?('2'+k+':1'+k):(String(6+Math.floor(rr()*11)).padStart(2,'0')+':'+String(Math.floor(rr()*60)).padStart(2,'0'));
+      sales.push({no:TCODE[c.town]+date.replace(/-/g,'')+String(1000+sn++).slice(1),cid:c.id,round:saleRounds[ri][0],grade:grade,net:net,price:price,amount:Math.round(net*price),date:date,time:time,coop:c.coop,devfp:'BS-'+TCODE[c.town]+'-0'+(1+ci%3)});
+    });
+  });
+  /* 遥感影像采集 */
+  const images=[];
+  const imgDef=[['2026-03-22','哨兵二号','感德镇',18,96,'已处理'],['2026-03-27','哨兵二号','祥华乡',35,88,'已处理'],['2026-04-01','哨兵二号','西坪镇',12,97,'已处理'],['2026-04-06','哨兵二号','感德镇',62,54,'SAR补全'],['2026-04-08','哨兵一号SAR','感德镇',0,92,'已处理'],['2026-04-16','哨兵二号','祥华乡',22,94,'已处理'],['2026-05-01','哨兵二号','西坪镇',9,98,'已处理'],['2026-06-05','哨兵二号','感德镇',15,96,'已处理'],['2026-07-10','哨兵二号','祥华乡',48,71,'SAR补全'],['2026-08-14','哨兵二号','西坪镇',26,90,'已处理'],['2026-09-18','哨兵二号','感德镇',11,97,'已处理'],['2026-10-03','哨兵二号','祥华乡',31,89,'处理中']];
+  imgDef.forEach((a,i)=>images.push({id:'YX'+(7100+i),date:a[0],sat:a[1],town:a[2],cloud:a[3],valid:a[4],status:a[5]}));
+  /* 气象采集 */
+  const weather=[];
+  const wDef=[['2025-12-18','强冷空气','全县','夜间低温 -2℃，高海拔茶园轻微冻害，未达理赔阈值','县气象局'],['2026-03-11','倒春寒','祥华乡/感德镇高海拔区','冠层指数骤降约31%，春茶首轮减产，触发灾损预警与指数险理赔','县气象局'],['2026-04-02','连阴雨','全县','持续 6 日降水，影像云量升高，启用 SAR 补全','县气象局'],['2026-06-19','高温干旱','西坪镇','连续 14 日无有效降水，夏茶单产预计下调 6%','县气象局'],['2026-07-28','台风外围降水','全县','短时强降水，无灾损','县气象局'],['2026-08-30','晴好','全县','暑茶采摘窗口良好','县气象局'],['2026-09-25','寒露风','高海拔区','轻度影响，持续监测','县气象局'],['2026-10-02','晴好','全县','秋茶采摘高峰，交售量进入旺季','县气象局']];
+  wDef.forEach((a,i)=>weather.push({id:'QX'+(6200+i),date:a[0],type:a[1],area:a[2],impact:a[3],source:a[4]}));
+  /* 价格采集 */
+  const prices=[];let pi=1;
+  ROUNDS.forEach(r=>{GRADES.forEach(g=>{
+    prices.push({id:'JG'+(5100+pi++),round:r,grade:g,price:Math.round(ROUND_PRICE[r]*GRADE_F[g]),date:r==='秋茶'?'2026-10-01':(r==='冬片'?'2026-10-28':'2026-0'+(['春茶','夏茶','暑茶'].indexOf(r)*2+3)+'-15'),source:'产区公示价'});
+  })});
+  /* 农资采工采集 */
+  const agri=[];
+  const agriCids=['AX-GD-0017','AX-GD-0026','AX-XH-0042','AX-XH-0036','AX-XP-0041','AX-XH-0007','AX-GD-0008','AX-XP-0029','AX-GD-0011','AX-XH-0019'];
+  agriCids.forEach((cid,i)=>{
+    const c=customers.find(x=>x.id===cid);
+    agri.push({id:'NZ'+(8100+i*2),cid:cid,type:'农资购买',amount:Math.round(c.area*(620+mulberry32(i*3+1)()*380)),date:'2026-02-'+String(5+i).padStart(2,'0'),proof:'已核验',note:'复合肥/有机肥/生物农药，农资店联网台账'});
+    agri.push({id:'NZ'+(8101+i*2),cid:cid,type:'采工工资',amount:Math.round(c.rounds*c.area*(180+mulberry32(i*7+2)()*90)),date:'2026-04-'+String(18+i).padStart(2,'0'),proof:i===2?'现金结算·待补充':'已核验',note:'合作社代发或签领记录'});
+  });
+  /* 无人机抽检 */
+  const drones=[];
+  const dDef=[['2026-01-18','AX-XP-0088','双账显著不符·三级复核','时序低位平直确认，仅2轮浅采，佐证虚报判定','王铮','已完成'],['2026-02-11','AX-GD-0034','疑似撂荒复核','地块冠层覆盖度不足40%，确认半撂荒状态','王铮','已完成'],['2026-03-15','AX-XH-0019','倒春寒灾损定损','冠层受损面积占比34%，出具定损影像报告','李航','已完成'],['2026-05-20','AX-XH-0042','瞒报疑点实地核查','茶园真实经营，管理到位，缺口来自体外交易','王铮','已完成'],['2026-10-05','AX-GD-0011','面积申报偏差复核排期','待执行','李航','已排期']];
+  dDef.forEach((a,i)=>drones.push({id:'WR'+(9100+i),date:a[0],cid:a[1],reason:a[2],result:a[3],op:a[4],status:a[5]}));
+  /* 风险评估 */
+  const risks=customers.map((cu,i)=>{
+    const r2=mulberry32(900+i*37);
+    const rhat=Math.round(cu.area*62*(0.38+0.40*cu.M)*105.6*(0.80+0.34*cu.M));
+    const saleSum=sales.filter(s=>s.cid===cu.id).reduce((s,x)=>s+x.amount,0);
+    const ract=cu.id==='AX-XP-0088'?saleSum:(saleSum||Math.round(rhat*(1+(r2()-0.5)*0.4)));
+    const dev=rhat>0?(ract-rhat)/rhat:0;
+    const ad=Math.abs(dev);
+    return {id:'FX'+(3100+i),cid:cu.id,rhat:rhat,ract:ract,delta:+dev.toFixed(3),level:cu.id==='AX-XP-0088'?'高':(ad>0.60?'高':(ad>0.25?'中':'低')),
+      verdict:cu.id==='AX-XP-0088'?'异常—拦截':(ad<=0.25?'一致—正常':(ad<=0.60?'关注—待核':'异常—实核')),
+      date:addDays('2026-01-05',i*2),M:cu.M,rounds:cu.rounds};
+  });
+  /* 还款记录 */
+  const repays=[];let rid=1;
+  credits.forEach(cr=>{
+    const per=Math.round(cr.used/cr.term);
+    const interest=Math.round(cr.used*cr.rate/100/12);
+    for(let m=1;m<=Math.min(cr.term,9);m++){
+      const due=addMonths(cr.grantDate,m);
+      const paid=due<'2026-10-01';
+      repays.push({id:'HK'+(50000+rid++),cid:cr.cid,creditId:cr.id,period:m,dueDate:due,amount:per+interest,payDate:paid?addDays(due,-Math.floor(rnd()*4)):null,status:paid?'已还清':'待还款'});
+    }
+  });
+  const od=repays.filter(r=>r.cid==='AX-GD-0039'&&r.status!=='已还清');
+  if(od.length){od[od.length-1].status='逾期';od[od.length-1].payDate=null}
+  /* 风险预警 */
+  const warns=[];
+  const wnDef=[['AX-XP-0088','疑似虚报流水','高','二级多源交叉比对','2026-01-15','已办结','自动拦截，移交银行人工核查'],['AX-XP-0088','一地多押嫌疑','高','二级多源交叉比对','2026-01-16','处置中','列入嫌疑名单，与他行核对押品登记'],['AX-XH-0042','疑似瞒报销售','高','二级多源交叉比对','2026-01-22','已办结','三级复核确认体外交易，引导转入合作社统一交售'],['AX-GD-0011','申报面积偏差','中','一级全量无感筛查','2025-11-13','已办结','按遥感量算面积 6.5 亩建档授信'],['AX-GD-0034','疑似撂荒','中','遥感时序监测','2026-02-10','处置中','无人机复核确认半撂荒，额度冻结观察'],['AX-XH-0019','灾损预警','高','气象联动','2026-03-14','已办结','自动展期 6 个月，指数险理赔 8,600 元'],['AX-XP-0029','双账显著不符','低','二级多源交叉比对','2026-03-05','已办结','亲邻代采代售佐证洗清，修正后核可'],['AX-GD-0039','还款逾期','中','贷后定期排查','2026-10-02','待处置','第 9 期应还未扣款成功，需客户经理上门']];
+  wnDef.forEach((a,i)=>warns.push({id:'YJ'+(4100+i),cid:a[0],type:a[1],level:a[2],src:a[3],date:a[4],st:a[5],act:a[6]}));
+  /* 用户与权限 */
+  const users=[
+    {u:'admin',pwd:'123456',name:'系统管理员',role:'系统管理员',org:'平台运营中心',phone:'13900000001',status:'启用',last:'2026-10-04 21:30'},
+    {u:'lxf',pwd:'123456',name:'林晓峰',role:'客户经理',org:'合作银行A支行 · 客户部',phone:'13900000002',status:'启用',last:'2026-10-04 18:12'},
+    {u:'hzm',pwd:'123456',name:'黄志明',role:'风控主管',org:'合作银行A支行 · 风控部',phone:'13900000003',status:'启用',last:'2026-10-04 17:40'},
+    {u:'cgp',pwd:'123456',name:'陈国平',role:'支行行长',org:'合作银行A支行',phone:'13900000004',status:'启用',last:'2026-10-03 16:05'},
+    {u:'coop01',pwd:'123456',name:'感德茶业合作社',role:'合作社操作员',org:'感德茶业合作社',phone:'13900000005',status:'启用',last:'2026-10-04 09:26'}
+  ];
+  const perms={
+    '系统管理员':['*'],
+    '客户经理':['dash','collect','plots','cust','apply','approval','credit','assess','risk','warn','repay','report'],
+    '风控主管':['dash','plots','approval','credit','assess','risk','warn','report'],
+    '支行行长':['dash','approval','credit','assess','risk','warn','report'],
+    '合作社操作员':['collect']
+  };
+  /* 系统参数 */
+  const settings={lpr:3.45,alpha:0.30,th2:0.25,th3:0.60,kappa:0.55,deltaLoss:0.95,ppess:88.0,ybase:62.0,
+    org:'合作银行A支行',region:'福建省安溪县（感德镇/祥华乡/西坪镇）'};
+  return {customers:customers,plots:plots,credits:credits,apps:apps,flows:flows,risks:risks,repays:repays,
+    sales:sales,images:images,weather:weather,prices:prices,agri:agri,drones:drones,warns:warns,users:users,perms:perms,settings:settings,
+    seq:{cust:100,app:2026021,cr:260119,fx:3121,hk:50000+rid,fl:fid,plot:200,sale:sn,img:7113,qx:6209,jg:5100+pi,nz:8121,wr:9106,yj:4109}};
+}
+const LS='eyeazhiqiu_admin_v2';
+let DB=null;
+function saveDB(){try{localStorage.setItem(LS,JSON.stringify(DB))}catch(e){}}
+function loadDB(){
+  try{const s=localStorage.getItem(LS);if(s){DB=JSON.parse(s);if(DB&&DB.customers&&DB.apps&&DB.sales)return}}catch(e){}
+  DB=seedData();saveDB();
+}
+function cust(id){return DB.customers.find(c=>c.id===id)}
+function custName(id){const c=cust(id);return c?c.name+'（'+id+'）':id}
+function appOf(id){return DB.apps.find(a=>a.id===id)}
+function creditOf(cid){return DB.credits.find(c=>c.cid===cid)}
+function riskOf(cid){return DB.risks.find(r=>r.cid===cid)}
+function salesOf(cid){return DB.sales.filter(s=>s.cid===cid)}
+
+/* ---------- 地账重算（采集→核验→评估→授信 数据打通核心） ---------- */
+function recalcFromSales(cid){
+  const rk=riskOf(cid);const c=cust(cid);if(!c)return;
+  const ract=salesOf(cid).reduce((s,x)=>s+x.amount,0);
+  if(rk){
+    rk.ract=ract;
+    rk.delta=rk.rhat>0?+((ract-rk.rhat)/rk.rhat).toFixed(3):0;
+    const ad=Math.abs(rk.delta);
+    rk.level=cid==='AX-XP-0088'?'高':(ad>DB.settings.th3?'高':(ad>DB.settings.th2?'中':'低'));
+    rk.verdict=cid==='AX-XP-0088'?'异常—拦截':(ad<=DB.settings.th2?'一致—正常':(ad<=DB.settings.th3?'关注—待核':'异常—实核'));
+    rk.date=today();
+    // 高风险自动生成预警
+    if(rk.level==='高'&&!DB.warns.some(w=>w.cid===cid&&w.type==='双账显著不符'&&w.st!=='已办结')){
+      DB.warns.push({id:'YJ'+(DB.seq.yj++),cid:cid,type:'双账显著不符',level:'高',src:'二级多源交叉比对',date:today(),st:'待处置',act:'Δ='+(rk.delta>0?'+':'')+rk.delta.toFixed(3)+' 超出三级阈值，转三级实地复核'});
+      toast('已自动生成「双账显著不符」高风险预警',false);
+    }
+  }
+  // 动态调额：采期流水超进度预期部分按 α 上调
+  const cr=creditOf(cid);
+  if(cr&&cr.status!=='已冻结'){
+    const expected=rk?rk.rhat*0.45:0;
+    const excess=Math.max(0,ract-expected);
+    const newAdd=Math.round(excess*DB.settings.alpha/100)*100;
+    if(newAdd!==cr.dynAdd){
+      cr.dynAdd=newAdd;cr.total=cr.base+newAdd;
+      toast('流水驱动动态调额：'+cust(c.id).name+'可用额度调整为 '+fmt(cr.total)+' 元');
+    }
+  }
+}
+
+/* ---------- SVG 图表引擎 ---------- */
+function chartLine(series,labels,w,h){
+  w=w||660;h=h||260;
+  const pad={l:44,r:12,t:16,b:28};
+  const maxV=Math.max(...series.flatMap(s=>s.data),1)*1.15;
+  const X=i=>pad.l+(w-pad.l-pad.r)*(labels.length>1?i/(labels.length-1):0.5);
+  const Y=v=>(h-pad.b)-(h-pad.t-pad.b)*v/maxV;
+  let s='<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;display:block"><rect width="'+w+'" height="'+h+'" fill="#fff"/>';
+  for(let i=0;i<=4;i++){const v=maxV*i/4,y=Y(v);
+    s+='<line x1="'+pad.l+'" y1="'+y+'" x2="'+(w-pad.r)+'" y2="'+y+'" stroke="#eef1f4"/><text x="6" y="'+(y+3)+'" class="chart-tip">'+fmtW(v)+'</text>'}
+  labels.forEach((lb,i)=>{if(labels.length<=8||i%2===0)s+='<text x="'+X(i)+'" y="'+(h-8)+'" text-anchor="middle" class="chart-tip">'+lb+'</text>'});
+  series.forEach(se=>{
+    const pts=se.data.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+    s+='<polyline points="'+pts+'" fill="none" stroke="'+se.color+'" stroke-width="2.2" stroke-linejoin="round"/>';
+    se.data.forEach((v,i)=>{s+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="3" fill="'+se.color+'"><title>'+se.name+' '+labels[i]+'：'+fmt(v)+'</title></circle>'});
+  });
+  return s+'</svg>';
+}
+function chartBars(items,w,h){
+  w=w||620;h=h||240;
+  const pad={l:44,r:10,t:14,b:26};
+  const maxV=Math.max(...items.map(i=>i.value),1)*1.15;
+  const bw=(w-pad.l-pad.r)/items.length;
+  let s='<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;display:block"><rect width="'+w+'" height="'+h+'" fill="#fff"/>';
+  for(let i=0;i<=4;i++){const v=maxV*i/4,y=pad.t+(h-pad.t-pad.b)*(1-i/4);
+    s+='<line x1="'+pad.l+'" y1="'+y+'" x2="'+(w-pad.r)+'" y2="'+y+'" stroke="#eef1f4"/><text x="6" y="'+(y+3)+'" class="chart-tip">'+fmtW(v)+'</text>'}
+  items.forEach((it,i)=>{
+    const bh=(h-pad.t-pad.b)*it.value/maxV,x=pad.l+bw*i+bw*0.16,y=h-pad.b-bh;
+    s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+(bw*0.68).toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="3" fill="'+(it.color||'#1ABB9C')+'"><title>'+it.label+'：'+fmt(it.value)+'</title></rect>'+
+    '<text x="'+(x+bw*0.34)+'" y="'+(h-8)+'" text-anchor="middle" class="chart-tip">'+it.label+'</text>';
+  });
+  return s+'</svg>';
+}
+function chartDonut(items,centerTop,centerBottom,w,h){
+  w=w||210;h=h||210;
+  const cx=w/2,cy=h/2,R=Math.min(w,h)/2-6,r=R*0.62;
+  const total=items.reduce((s,i)=>s+i.value,0)||1;
+  let a=-Math.PI/2,out='';
+  items.forEach(it=>{
+    const a2=a+Math.PI*2*it.value/total,large=(a2-a)>Math.PI?1:0;
+    const x1=cx+R*Math.cos(a),y1=cy+R*Math.sin(a),x2=cx+R*Math.cos(a2),y2=cy+R*Math.sin(a2);
+    const x3=cx+r*Math.cos(a2),y3=cy+r*Math.sin(a2),x4=cx+r*Math.cos(a),y4=cy+r*Math.sin(a);
+    if(it.value>0)out+='<path d="M'+x1.toFixed(1)+' '+y1.toFixed(1)+' A'+R+' '+R+' 0 '+large+' 1 '+x2.toFixed(1)+' '+y2.toFixed(1)+' L'+x3.toFixed(1)+' '+y3.toFixed(1)+' A'+r+' '+r+' 0 '+large+' 0 '+x4.toFixed(1)+' '+y4.toFixed(1)+' Z" fill="'+it.color+'" stroke="#fff" stroke-width="2"/>';
+    a=a2;
+  });
+  out+='<text x="'+cx+'" y="'+(cy-2)+'" text-anchor="middle" style="font-size:21px;font-weight:700;fill:#333c46">'+centerTop+'</text><text x="'+cx+'" y="'+(cy+17)+'" text-anchor="middle" style="font-size:10px;fill:#8496a9">'+centerBottom+'</text>';
+  return '<svg viewBox="0 0 '+w+' '+h+'" style="width:200px;height:auto;display:block;margin:0 auto">'+out+'</svg>';
+}
+function chartNDVI(c,w,h){ // 采摘扰动指纹曲线
+  w=w||640;h=h||220;
+  const pad={l:34,r:8,t:12,b:22};
+  const base=0.50+0.20*c.M;
+  const months={ '春茶':3.4,'夏茶':5.4,'暑茶':7.3,'秋茶':9.2,'冬片':10.6 };
+  const dips=ROUNDS.slice(0,Math.max(2,c.rounds)).map(r=>({m:months[r],n:r}));
+  const rnd=mulberry32(7700+parseInt(c.id.slice(-4)));
+  const X=mm=>pad.l+(w-pad.l-pad.r)*mm/12;
+  const Y=v=>pad.t+(h-pad.t-pad.b)*(1-(v-0.1)/0.8);
+  const pts=[];
+  for(let m=0;m<=12;m+=0.17){
+    let v=base;
+    dips.forEach(dp=>{const dist=m-dp.m;
+      if(dist>=-0.25&&dist<=0)v=Math.min(v,base-c.d*(1+dist*0.6));
+      else if(dist>0){const rec=Math.min(1,dist*c.r*12/Math.max(0.02,c.d));v=Math.min(v,base-c.d*(1-rec))}
+    });
+    pts.push(X(m).toFixed(1)+','+Y(Math.max(0.12,Math.min(0.9,v+(rnd()-0.5)*0.012))).toFixed(1));
+  }
+  let s='<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;display:block"><rect width="'+w+'" height="'+h+'" fill="#fbfdfc" rx="4"/>';
+  ['1月','3月','5月','7月','9月','11月'].forEach((lb,i)=>{const gx=X(i*2+0.5);
+    s+='<line x1="'+gx+'" y1="'+pad.t+'" x2="'+gx+'" y2="'+(h-pad.b)+'" stroke="#e9f1ec"/><text x="'+(gx+2)+'" y="'+(h-6)+'" class="chart-tip">'+lb+'</text>'});
+  s+='<polyline points="'+pts.join(' ')+'" fill="none" stroke="#1ABB9C" stroke-width="2.2" stroke-linejoin="round"/>';
+  dips.forEach((dp,i)=>{const yv=Y(base-c.d);
+    s+='<circle cx="'+X(dp.m)+'" cy="'+yv+'" r="4" fill="#F39C12" stroke="#fff" stroke-width="1.5"><title>'+dp.n+'采摘谷点</title></circle><text x="'+X(dp.m)+'" y="'+(yv+15)+'" text-anchor="middle" style="font-size:9.5px;fill:#b9770e">'+dp.n+'</text>'});
+  return s+'</svg>';
+}
+function chartScatter(points,w,h){ // 双账散点：{x,y,label,color,cid}
+  w=w||600;h=h||400;
+  const pad={l:48,r:14,t:14,b:38};
+  const maxV=Math.max(...points.map(p=>Math.max(p.x,p.y)),1)*1.12;
+  const X=v=>pad.l+(w-pad.l-pad.r)*v/maxV;
+  const Y=v=>(h-pad.b)-(h-pad.t-pad.b)*v/maxV;
+  const th2=DB.settings.th2,th3=DB.settings.th3;
+  let s='<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:auto;display:block"><rect width="'+w+'" height="'+h+'" fill="#fbfdfc" rx="4"/>';
+  for(let i=1;i<=5;i++){const v=maxV*i/5;
+    s+='<line x1="'+X(v)+'" y1="'+pad.t+'" x2="'+X(v)+'" y2="'+(h-pad.b)+'" stroke="#eef3ef"/><line x1="'+pad.l+'" y1="'+Y(v)+'" x2="'+(w-pad.r)+'" y2="'+Y(v)+'" stroke="#eef3ef"/>'+
+    '<text x="'+(X(v)-6)+'" y="'+(h-pad.b+15)+'" class="chart-tip">'+fmtW(v)+'</text><text x="6" y="'+(Y(v)+4)+'" class="chart-tip">'+fmtW(v)+'</text>'}
+  s+='<polygon points="'+X(0)+','+Y(0)+' '+X(maxV)+','+Y(maxV*(1+th2))+' '+X(maxV)+','+Y(maxV*(1-th2))+'" fill="#1ABB9C" opacity="0.08"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(maxV)+'" y2="'+Y(maxV)+'" stroke="#16a085" stroke-width="1.5"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(maxV)+'" y2="'+Y(maxV*(1+th2))+'" stroke="#F39C12" stroke-dasharray="5 4"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(maxV)+'" y2="'+Y(maxV*(1-th2))+'" stroke="#F39C12" stroke-dasharray="5 4"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(maxV)+'" y2="'+Y(maxV*(1+th3))+'" stroke="#E74C3C" stroke-dasharray="3 4"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(maxV)+'" y2="'+Y(maxV*(1-th3))+'" stroke="#E74C3C" stroke-dasharray="3 4"/>';
+  points.forEach(p=>{
+    s+='<circle cx="'+X(p.x)+'" cy="'+Y(p.y)+'" r="6" fill="'+p.color+'" fill-opacity="0.85" stroke="#fff" stroke-width="1.5" style="cursor:pointer" onclick="viewRisk(\''+p.cid+'\')"><title>'+esc(p.label)+'</title></circle>';
+  });
+  s+='<text x="'+(w/2)+'" y="'+(h-6)+'" text-anchor="middle" class="chart-tip">物理账推算收益 R̂（元）</text>';
+  s+='<text x="13" y="'+(h/2)+'" text-anchor="middle" class="chart-tip" transform="rotate(-90 13 '+(h/2)+')">经济账实测收益（元）</text>';
+  return s+'</svg>';
+}
+
+/* =====================================================================
+   通用表格引擎：分页 / 排序 / 关键字搜索 / 条件筛选
+   ===================================================================== */
+const TBL={};
+function tblState(key){if(!TBL[key])TBL[key]={page:1,size:8,kw:'',sk:null,sd:1,f:{}};return TBL[key]}
+function tblSet(key,field,val){const st=tblState(key);if(field==='kw'){st.kw=val;st.page=1}else if(field==='size'){st.size=+val;st.page=1}else if(field.startsWith('f_')){st.f[field.slice(2)]=val;st.page=1}render()}
+function tblSort(key,sk){const st=tblState(key);if(st.sk===sk)st.sd*=-1;else{st.sk=sk;st.sd=1}render()}
+function tblPage(key,p){tblState(key).page=p;render()}
+function buildTable(key,cfg){
+  const st=tblState(key);
+  let rows=cfg.rows.slice();
+  Object.keys(st.f).forEach(fk=>{const v=st.f[fk];if(v!==undefined&&v!=='')rows=rows.filter(r=>String(cfg.fval?cfg.fval(r,fk):r[fk])===String(v))});
+  if(st.kw){const kw=st.kw.trim().toLowerCase();rows=rows.filter(r=>cfg.searchText(r).toLowerCase().includes(kw))}
+  if(st.sk){const col=cfg.cols.find(c=>c.k===st.sk);rows.sort((a,b)=>{let va=col.sortVal?col.sortVal(a):a[st.sk],vb=col.sortVal?col.sortVal(b):b[st.sk];if(typeof va==='string')return va.localeCompare(vb,'zh')*st.sd;return((va>vb)-(va<vb))*st.sd})}
+  const total=rows.length,pages=Math.max(1,Math.ceil(total/st.size));
+  if(st.page>pages)st.page=pages;
+  const list=rows.slice((st.page-1)*st.size,st.page*st.size);
+  let h='<div class="tbar"><input type="text" placeholder="'+(cfg.searchPh||'输入关键字搜索')+'" value="'+esc(st.kw)+'" oninput="tblSet(\''+key+'\',\'kw\',this.value)">';
+  (cfg.filters||[]).forEach(f=>{
+    h+='<select onchange="tblSet(\''+key+'\',\'f_'+f.k+'\',this.value)"><option value="">'+f.label+'：全部</option>'+
+    f.options.map(o=>'<option value="'+esc(o.v)+'" '+(String(st.f[f.k])===String(o.v)?'selected':'')+'>'+esc(o.t)+'</option>').join('')+'</select>';
+  });
+  h+='<span class="grow"></span><select onchange="tblSet(\''+key+'\',\'size\',this.value)">'+[8,15,30].map(n=>'<option '+(st.size===n?'selected':'')+' value="'+n+'">每页 '+n+' 条</option>').join('')+'</select></div>';
+  h+='<div style="overflow-x:auto"><table class="gt"><thead><tr>'+cfg.cols.map(c=>{
+    const arr=st.sk===c.k?('<span class="arr">'+(st.sd>0?'▲':'▼')+'</span>'):'<span class="arr">▲▼</span>';
+    return '<th '+(c.sort?'class="sortable" onclick="tblSort(\''+key+'\',\''+c.k+'\')"':'')+'>'+c.t+(c.sort?arr:'')+'</th>';
+  }).join('')+'</tr></thead><tbody>';
+  if(!list.length)h+='<tr><td colspan="'+cfg.cols.length+'"><div class="empty">没有符合条件的记录</div></td></tr>';
+  list.forEach(r=>{h+='<tr>'+cfg.cols.map(c=>'<td>'+(c.render?c.render(r):esc(r[c.k]))+'</td>').join('')+'</tr>'});
+  h+='</tbody></table></div>';
+  h+='<div class="tfoot"><span class="info">共 '+total+' 条记录，第 '+st.page+' / '+pages+' 页</span><div class="pager">';
+  h+='<button '+(st.page<=1?'disabled':'')+' onclick="tblPage(\''+key+'\','+(st.page-1)+')">上一页</button>';
+  const win=[];for(let p=1;p<=pages;p++){if(p===1||p===pages||Math.abs(p-st.page)<=1)win.push(p)}
+  let last=0;win.forEach(p=>{if(p-last>1)h+='<button disabled>…</button>';h+='<button class="'+(p===st.page?'on':'')+'" onclick="tblPage(\''+key+'\','+p+')">'+p+'</button>';last=p});
+  h+='<button '+(st.page>=pages?'disabled':'')+' onclick="tblPage(\''+key+'\','+(st.page+1)+')">下一页</button></div></div>';
+  return h;
+}
+
+/* =====================================================================
+   页面：数据仪表盘
+   ===================================================================== */
+function pageDash(){
+  const credits=DB.credits,apps=DB.apps,repays=DB.repays;
+  const totalCredit=credits.reduce((s,c)=>s+c.total,0);
+  const used=credits.reduce((s,c)=>s+c.used,0);
+  const passed=apps.filter(a=>['已通过','已放款'].includes(a.status)).length;
+  const done=apps.filter(a=>!['待初审','复核中','终审中'].includes(a.status)).length;
+  const passRate=done?Math.round(passed/done*1000)/10:0;
+  const overdue=repays.filter(r=>r.status==='逾期').length;
+  const warnOpen=DB.warns.filter(w=>w.st!=='已办结').length;
+  const months=[],mCredits=[],mApps=[];
+  for(let i=7;i>=0;i--){const d=addMonths('2026-10-01',-i);months.push(d.slice(0,7).replace('-','/'));
+    const mk=d.slice(0,7);
+    mApps.push(apps.filter(a=>a.date.slice(0,7)===mk).length);
+    mCredits.push(credits.filter(c=>c.grantDate.slice(0,7)===mk).reduce((s,c)=>s+c.base,0));
+  }
+  const stCount={};APP_STATUS.forEach(s=>stCount[s]=0);apps.forEach(a=>stCount[a.status]++);
+  const townCredit=TOWNS.map(t=>({label:t,value:credits.filter(c=>cust(c.cid).town===t).reduce((s,c)=>s+c.total,0),color:{'感德镇':'#1ABB9C','祥华乡':'#3498DB','西坪镇':'#9B59B6'}[t]}));
+  const recentApps=[...apps].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6);
+  const todo=apps.filter(a=>['待初审','复核中','终审中'].includes(a.status)).length;
+  const saleTotal=DB.sales.reduce((s,x)=>s+x.amount,0);
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>数据仪表盘<span class="right"><button class="btn btn-d btn-xs" onclick="resetAll()">恢复出厂数据</button></span></div>'+
+  '<div class="stat-grid">'+
+    statCard('授信总额（在贷余额）',fmtW(totalCredit)+'<small> 元</small>','户均 '+fmt(totalCredit/credits.length)+' 元 · 已用 '+fmtW(used)+' 元','up','较上采期 +12.4%','s1','M12 2v20M17 6.5c0-2-2.2-3-5-3s-5 1-5 3 2 2.7 5 3.3 5 1.4 5 3.4-2.2 3-5 3-5-1-5-3','#e2f7ef','#12805c')+
+    statCard('授信申请（累计）',apps.length+'<small> 笔</small>','本月新增 '+apps.filter(a=>a.date>='2026-10-01').length+' 笔 · 待办 '+todo+' 笔','up','采期进件量稳步上升','s2','M4 5h16M4 10h16M4 15h10M4 20h7','#e8f1fb','#2470a8')+
+    statCard('审批通过率',passRate+'<small> %</small>','通过 '+passed+' 笔 / 已办结 '+done+' 笔 · 拒绝 '+apps.filter(a=>a.status==='已拒绝').length+' 笔','up','双账核验拦截异常户','s3','m4.5 12.5 5 5 10-11','#fef4e2','#b9770e')+
+    statCard('风险预警待处置',warnOpen+'<small> 项</small>','逾期还款 '+overdue+' 笔 · 不良率对照 3.5%','dn','按等级与 |Δ| 排序处置','s4','M12 3 2.5 20h19L12 3Zm0 7v4m0 3.5v.5','#f3e9f7','#7d3c98')+
+  '</div>'+
+  '<div class="panel"><div class="panel-h"><h3>五源数据采集概况</h3><span class="sub">天 · 账 · 价 · 灾 · 人 + 无人机抽检</span><div class="tools"><button class="btn btn-d btn-xs" onclick="go(\'collect\')">进入采集中心</button></div></div><div class="panel-b"><div class="stat-grid g6" style="margin:0">'+
+    miniStat('遥感影像',DB.images.length+' 景','哨兵二号 + SAR','#1ABB9C')+
+    miniStat('磅秤台账',DB.sales.length+' 笔',fmtW(saleTotal)+' 元','#3498DB')+
+    miniStat('价格采集',DB.prices.length+' 条','分轮次分等级','#9B59B6')+
+    miniStat('气象记录',DB.weather.length+' 条','倒春寒已联动理赔','#F39C12')+
+    miniStat('农资采工',DB.agri.length+' 条','二级佐证数据','#5b7a99')+
+    miniStat('无人机抽检',DB.drones.length+' 架次','三级复核通道','#E74C3C')+
+  '</div></div></div>'+
+  '<div class="grid2">'+
+    '<div class="panel"><div class="panel-h"><h3>授信规模与进件趋势</h3><span class="sub">近 8 个月</span></div><div class="panel-b">'+
+    chartLine([{name:'新增授信（元）',color:'#1ABB9C',data:mCredits},{name:'申请笔数×10000',color:'#3498DB',data:mApps.map(n=>n*10000)}],months)+
+    '<div class="legend"><span><i style="background:#1ABB9C"></i>新增授信（元）</span><span><i style="background:#3498DB"></i>申请笔数（右轴缩放）</span></div></div></div>'+
+    '<div class="panel"><div class="panel-h"><h3>申请状态分布</h3><span class="sub">全部 '+apps.length+' 笔</span></div><div class="panel-b" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">'+
+    chartDonut([{label:'已放款',value:stCount['已放款'],color:'#1ABB9C'},{label:'已通过',value:stCount['已通过'],color:'#2ECC71'},{label:'审批中',value:stCount['待初审']+stCount['复核中']+stCount['终审中'],color:'#F39C12'},{label:'已拒绝',value:stCount['已拒绝'],color:'#E74C3C'}],apps.length,'申请总数')+
+    '<div style="flex:1;min-width:170px">'+[['已放款','#1ABB9C',stCount['已放款']],['已通过','#2ECC71',stCount['已通过']],['审批中（初审/复核/终审）','#F39C12',stCount['待初审']+stCount['复核中']+stCount['终审中']],['已拒绝','#E74C3C',stCount['已拒绝']]].map(x=>'<div class="kv"><span class="k"><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:'+x[1]+';margin-right:6px"></i>'+x[0]+'</span><span class="v">'+x[2]+' 笔</span></div>').join('')+'</div></div></div>'+
+  '</div>'+
+  '<div class="grid2">'+
+    '<div class="panel"><div class="panel-h"><h3>分乡镇授信规模</h3><span class="sub">在贷余额（元）</span></div><div class="panel-b">'+chartBars(townCredit)+'</div></div>'+
+    '<div class="panel"><div class="panel-h"><h3>最新授信申请</h3><div class="tools"><button class="btn btn-d btn-xs" onclick="go(\'apply\')">查看全部</button></div></div><div class="panel-b flush"><table class="gt"><thead><tr><th>申请编号</th><th>客户</th><th>金额</th><th>状态</th><th>申请日期</th></tr></thead><tbody>'+
+    recentApps.map(a=>'<tr style="cursor:pointer" onclick="viewApp(\''+a.id+'\')"><td class="mono">'+a.id+'</td><td>'+esc(custName(a.cid))+'</td><td>'+fmt(a.amount)+' 元</td><td><span class="tag '+APP_CLS[a.status]+'">'+a.status+'</span></td><td>'+a.date+'</td></tr>').join('')+
+    '</tbody></table></div></div>'+
+  '</div>'+
+  '<div class="panel"><div class="panel-h"><h3>业务闭环与平台运行指标</h3><span class="sub">数据采集 → 双核核验 → 收益评估 → 动态授信 → 贷后跟踪</span></div><div class="panel-b"><div class="grid3">'+
+    '<div class="kv" style="border:1px solid var(--line);border-radius:6px;padding:12px 16px"><span class="k">单户核验综合成本</span><span class="v">20.58 元<br><span class="tag tg-green" style="font-weight:400">较人工尽调 410.7 元降 20 倍</span></span></div>'+
+    '<div class="kv" style="border:1px solid var(--line);border-radius:6px;padding:12px 16px"><span class="k">核验时效</span><span class="v">T+1 天<br><span class="tag tg-green" style="font-weight:400">较 5.22 天提升 5.2 倍</span></span></div>'+
+    '<div class="kv" style="border:1px solid var(--line);border-radius:6px;padding:12px 16px"><span class="k">异常识别命中率</span><span class="v">100%<br><span class="tag tg-green" style="font-weight:400">漏判 0 户 · 误扰可由二级佐证洗清</span></span></div>'+
+  '</div></div></div>';
+}
+function miniStat(lb,vl,ft,color){
+  return '<div class="stat" style="padding:13px 14px"><div class="lb" style="color:'+color+';font-weight:600">'+lb+'</div><div class="vl" style="font-size:19px">'+vl+'</div><div class="ft" style="margin-top:2px">'+ft+'</div></div>';
+}
+function statCard(lb,vl,ft,trend,trendTxt,cls,icon,icbg,icfg){
+  return '<div class="stat '+cls+'"><div class="ic" style="background:'+icbg+'"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="'+icfg+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="'+icon+'"/></svg></div><div class="lb">'+lb+'</div><div class="vl">'+vl+'</div><div class="ft">'+ft+'<br><span class="'+trend+'">'+trendTxt+'</span></div></div>';
+}
+
+/* =====================================================================
+   页面：客户管理（茶农档案）
+   ===================================================================== */
+function pageCustomers(){
+  const rows=DB.customers.map(c=>{
+    const cr=creditOf(c.id),rk=riskOf(c.id);
+    return {...c,credit:cr?cr.total:0,rate:cr?cr.rate:0,risk:rk?rk.level:'—'};
+  });
+  const body=buildTable('cust',{
+    rows:rows,searchPh:'搜索姓名 / 编号 / 村',
+    searchText:r=>r.id+r.name+r.town+r.village+r.coop+r.phone,
+    filters:[
+      {k:'town',label:'乡镇',options:TOWNS.map(t=>({v:t,t:t}))},
+      {k:'tier',label:'管理档位',options:TIERS.map((t,i)=>({v:i,t:t}))},
+      {k:'risk',label:'风险等级',options:['低','中','高'].map(t=>({v:t,t:t}))}
+    ],
+    cols:[
+      {k:'id',t:'客户编号',sort:true,render:r=>'<b class="mono">'+r.id+'</b>'},
+      {k:'name',t:'户主',sort:true},
+      {k:'town',t:'乡镇·村',render:r=>r.town+'·'+r.village},
+      {k:'coop',t:'所属合作社'},
+      {k:'area',t:'茶园面积(亩)',sort:true,render:r=>r.area.toFixed(1)},
+      {k:'tier',t:'管理档位',sort:true,render:r=>'<span class="tag '+(r.tier===2?'tg-green':(r.tier===1?'tg-orange':'tg-red'))+'">'+TIERS[r.tier]+'</span>'},
+      {k:'M',t:'M指数',sort:true,render:r=>r.M.toFixed(2)},
+      {k:'credit',t:'授信额度(元)',sort:true,render:r=>r.credit?fmt(r.credit):'—'},
+      {k:'risk',t:'风险',sort:true,render:r=>'<span class="tag '+(r.risk==='低'?'tg-green':(r.risk==='中'?'tg-orange':(r.risk==='高'?'tg-red':'tg-gray')))+'">'+r.risk+'</span>'},
+      {k:'_act',t:'操作',render:r=>'<button class="btn btn-d btn-xs" onclick="viewCust(\''+r.id+'\')">详情</button> <button class="btn btn-d btn-xs" onclick="editCust(\''+r.id+'\')">编辑</button> <button class="btn btn-r btn-xs" onclick="delCust(\''+r.id+'\')">删除</button>'}
+    ]
+  });
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>客户管理</div>'+
+  '<div class="page-title-row"><div><h2>客户管理</h2><div class="sub">茶农档案 · 一地一码 · 共 '+DB.customers.length+' 户</div></div><button class="btn btn-p" onclick="editCust(\'\')">＋ 新增客户</button></div>'+
+  '<div class="panel"><div class="panel-b flush">'+body+'</div></div>';
+}
+function editCust(id){
+  const c=id?cust(id):null;
+  openModal((c?'编辑客户 · '+c.id:'新增客户'),
+   '<div class="f2">'+
+   fInput('cuName','户主姓名',c?c.name:'',true)+
+   fInput('cuPhone','联系电话',c?c.phone:'',true)+
+   '</div><div class="f2">'+
+   fSelect('cuTown','乡镇',TOWNS,c?c.town:'',true,'syncVillage()')+
+   fSelect('cuVillage','行政村',c?VILLAGES[c.town]:VILLAGES['感德镇'],c?c.village:'',true)+
+   '</div>'+
+   '<div class="f2">'+
+   fInput('cuArea','茶园面积（亩）',c?c.area:'',true,'number','0.1')+
+   fInput('cuAlt','海拔（m）',c?c.alt:700,false,'number')+
+   '</div><div class="f3">'+
+   fInput('cuRounds','采摘轮次（2~5）',c?c.rounds:4,true,'number')+
+   fInput('cuM','管理强度 M（0~1）',c?c.M:0.5,true,'number','0.01')+
+   fInput('cuAge','树龄（年）',c?c.treeAge:10,false,'number')+
+   '</div>'+
+   '<div class="note green">保存后自动重算管理档位、物理账、风险判定与建议额度，名下地块同步更新。</div>',
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="saveCust(\''+id+'\')">保存</button>');
+}
+function syncVillage(){
+  const t=$('cuTown').value;
+  $('cuVillage').innerHTML=VILLAGES[t].map(v=>'<option>'+v+'</option>').join('');
+}
+function saveCust(id){
+  if(!validate(['cuName','cuPhone','cuArea','cuRounds','cuM']))return;
+  const area=parseFloat($('cuArea').value),M=parseFloat($('cuM').value),rounds=parseInt($('cuRounds').value);
+  if(!(area>0)){fieldErr('cuArea','面积必须大于 0');return}
+  if(!(M>=0&&M<=1)){fieldErr('cuM','M 必须在 0~1 之间');return}
+  const town=$('cuTown').value;
+  const obj={name:$('cuName').value.trim(),phone:$('cuPhone').value.trim(),town:town,village:$('cuVillage').value,coop:COOPS[town],
+    area:area,alt:parseInt($('cuAlt').value)||700,rounds:Math.max(1,Math.min(6,rounds)),M:M,treeAge:parseInt($('cuAge').value)||10,
+    tier:M>=0.66?2:(M>=0.36?1:0),d:+(0.05+M*0.17).toFixed(3),r:+(0.01+M*0.042).toFixed(3)};
+  if(id){
+    Object.assign(cust(id),obj);
+    const rk=riskOf(id);
+    if(rk){rk.rhat=Math.round(area*DB.settings.ybase*(0.38+0.40*M)*105.6*(0.80+0.34*M));rk.M=M;rk.rounds=obj.rounds;recalcFromSales(id)}
+    const mainPlot=DB.plots.find(p=>p.cid===id);
+    if(mainPlot){mainPlot.areaR=area;mainPlot.alt=obj.alt;mainPlot.treeAge=obj.treeAge}
+    toast('客户 '+id+' 信息已更新，物理账与风险判定已重算');
+  }else{
+    const nid='AX-'+TCODE[town]+'-'+String(DB.seq.cust++).padStart(4,'0');
+    DB.customers.push({id:nid,idcard:'',joinDate:today(),status:'正常',...obj});
+    DB.risks.push({id:'FX'+(DB.seq.fx++),cid:nid,rhat:Math.round(area*DB.settings.ybase*(0.38+0.40*M)*105.6*(0.80+0.34*M)),ract:0,delta:0,level:'低',verdict:'待台账积累',date:today(),M:M,rounds:obj.rounds});
+    DB.plots.push({id:TCODE[town]+'-'+VCODE[$('cuVillage').value]+'-'+String(DB.seq.plot++).slice(-3),cid:nid,areaR:area,areaD:area,alt:obj.alt,treeAge:obj.treeAge,owner:'承包经营权在册',buildDate:today(),status:'正常'});
+    toast('新客户已建档赋码 '+nid+'，地块与评估档案同步生成');
+  }
+  saveDB();closeModal();render();
+}
+function delCust(id){
+  const c=cust(id);
+  openConfirm('删除客户','确认删除客户 <b>'+esc(c.name)+'（'+id+'）</b>？<br>其名下地块、授信申请、额度、评估、交售台账与还款记录将一并删除，该操作不可撤销。',function(){
+    DB.customers=DB.customers.filter(x=>x.id!==id);
+    DB.plots=DB.plots.filter(x=>x.cid!==id);
+    DB.apps=DB.apps.filter(x=>x.cid!==id);
+    DB.credits=DB.credits.filter(x=>x.cid!==id);
+    DB.risks=DB.risks.filter(x=>x.cid!==id);
+    DB.repays=DB.repays.filter(x=>x.cid!==id);
+    DB.sales=DB.sales.filter(x=>x.cid!==id);
+    DB.warns=DB.warns.filter(x=>x.cid!==id);
+    saveDB();render();toast('客户 '+id+' 已删除');
+  });
+}
+function viewCust(id){
+  const c=cust(id);if(!c)return;
+  const cr=creditOf(id),rk=riskOf(id);
+  const apps=DB.apps.filter(a=>a.cid===id);
+  const reps=DB.repays.filter(r=>r.cid===id);
+  const plots=DB.plots.filter(p=>p.cid===id);
+  const sales=salesOf(id).sort((a,b)=>b.date.localeCompare(a.date));
+  openDrawer('客户详情 · '+c.id,esc(c.name)+' · '+c.town+c.village,
+  '<div class="panel"><div class="panel-h"><h3>基本档案</h3><div class="tools"><button class="btn btn-d btn-xs" onclick="closeDrawer();editCust(\''+id+'\')">编辑</button></div></div><div class="panel-b">'+
+    kv('客户编号',c.id)+kv('户主 / 电话',esc(c.name)+' · '+c.phone)+kv('乡镇·村',c.town+'·'+c.village)+kv('所属合作社',esc(c.coop))+
+    kv('茶园面积 / 海拔 / 树龄',c.area.toFixed(1)+' 亩 / '+c.alt+' m / '+c.treeAge+' 年')+kv('采摘轮次 · M指数',c.rounds+' 轮 · '+c.M.toFixed(2))+
+    kv('管理档位','<span class="tag '+(c.tier===2?'tg-green':(c.tier===1?'tg-orange':'tg-red'))+'">'+TIERS[c.tier]+'</span>')+kv('建档日期',c.joinDate)+
+    kv('名下地块',plots.length+' 块（'+plots.map(p=>p.id).join('、')+'）')+
+  '</div></div>'+
+  '<div class="panel"><div class="panel-h"><h3>采摘扰动指纹（天眼）</h3></div><div class="panel-b">'+chartNDVI(c)+
+  '<div class="legend"><span><i style="background:#1ABB9C;border-radius:99px"></i>冠层 NDVI 时序</span><span><i style="background:#F39C12;border-radius:99px"></i>采摘谷点（全年 '+c.rounds+' 轮）</span></div></div></div>'+
+  (rk?'<div class="panel"><div class="panel-h"><h3>双账核验（收益评估）</h3></div><div class="panel-b">'+
+    kv('物理账推算收益',fmt(rk.rhat)+' 元')+kv('经济账实测收益',rk.ract?fmt(rk.ract)+' 元':'—')+
+    kv('一致性偏差 Δ',(rk.delta>0?'+':'')+rk.delta.toFixed(3))+
+    kv('判定结论','<span class="tag '+(rk.level==='低'?'tg-green':(rk.level==='中'?'tg-orange':'tg-red'))+'">'+rk.verdict+'</span>')+
+  '</div></div>':'')+
+  (cr?'<div class="panel"><div class="panel-h"><h3>授信额度</h3></div><div class="panel-b">'+
+    kv('基础额度 / 动态上调',fmt(cr.base)+' 元 / +'+fmt(cr.dynAdd)+' 元')+kv('当前总额度',fmt(cr.total)+' 元')+
+    kv('已用额度',fmt(cr.used)+' 元（'+Math.round(cr.used/cr.total*100)+'%）')+
+    '<div class="prog" style="margin:6px 0 12px"><i style="width:'+Math.round(cr.used/cr.total*100)+'%"></i></div>'+
+    kv('执行利率','LPR + '+(cr.rate-DB.settings.lpr).toFixed(2)+'pct = <b>'+cr.rate.toFixed(2)+'%</b>')+
+    kv('额度有效期',cr.grantDate+' 至 '+cr.expireDate)+kv('状态','<span class="tag '+(cr.status==='正常'?'tg-green':(cr.status==='展期中'?'tg-blue':'tg-red'))+'">'+cr.status+'</span>')+
+  '</div></div>':'<div class="note">该客户尚无生效授信额度，可在"授信申请管理"发起申请。</div>')+
+  '<div class="panel"><div class="panel-h"><h3>交售台账（'+sales.length+' 笔）</h3></div><div class="panel-b flush">'+
+   (sales.length?'<table class="gt"><thead><tr><th>单号</th><th>日期</th><th>轮次</th><th>等级</th><th>净重</th><th>金额</th></tr></thead><tbody>'+sales.slice(0,8).map(s=>'<tr><td class="mono" style="font-size:11px">'+s.no+'</td><td>'+s.date+'</td><td>'+s.round+'</td><td>'+s.grade+'</td><td>'+s.net.toFixed(1)+'kg</td><td>'+fmt(s.amount)+'</td></tr>').join('')+'</tbody></table>':'<div class="empty">暂无交售记录</div>')+'</div></div>'+
+  '<div class="panel"><div class="panel-h"><h3>授信申请（'+apps.length+'）</h3></div><div class="panel-b flush">'+
+   (apps.length?'<table class="gt"><thead><tr><th>编号</th><th>金额</th><th>用途</th><th>状态</th><th>日期</th></tr></thead><tbody>'+apps.map(a=>'<tr style="cursor:pointer" onclick="closeDrawer();viewApp(\''+a.id+'\')"><td class="mono">'+a.id+'</td><td>'+fmt(a.amount)+'</td><td>'+esc(a.purpose)+'</td><td><span class="tag '+APP_CLS[a.status]+'">'+a.status+'</span></td><td>'+a.date+'</td></tr>').join('')+'</tbody></table>':'<div class="empty">暂无申请记录</div>')+'</div></div>'+
+  '<div class="panel"><div class="panel-h"><h3>还款记录（'+reps.length+'）</h3></div><div class="panel-b flush">'+
+   (reps.length?'<table class="gt"><thead><tr><th>期次</th><th>应还日</th><th>金额</th><th>状态</th></tr></thead><tbody>'+reps.slice(-6).map(r=>'<tr><td>第 '+r.period+' 期</td><td>'+r.dueDate+'</td><td>'+fmt(r.amount)+'</td><td><span class="tag '+(r.status==='已还清'?'tg-green':(r.status==='逾期'?'tg-red':'tg-orange'))+'">'+r.status+'</span></td></tr>').join('')+'</tbody></table>':'<div class="empty">暂无还款记录</div>')+'</div></div>');
+}
+
+/* =====================================================================
+   页面：茶园地块管理（一地一码数字身份证）
+   ===================================================================== */
+function pagePlots(){
+  const rows=DB.plots.map(p=>{
+    const c=cust(p.cid);
+    const dev=p.areaR>0?(p.areaD-p.areaR)/p.areaR:0;
+    return {...p,cname:c?c.name:p.cid,town:c?c.town:'',village:c?c.village:'',dev:dev};
+  });
+  const over=rows.filter(r=>r.dev>0.15).length;
+  const body=buildTable('plots',{
+    rows:rows,searchPh:'搜索地块码 / 农户',
+    searchText:r=>r.id+r.cname+r.cid+r.town+r.village,
+    filters:[
+      {k:'town',label:'乡镇',options:TOWNS.map(t=>({v:t,t:t}))},
+      {k:'status',label:'监测状态',options:['正常','疑似撂荒'].map(t=>({v:t,t:t}))},
+      {k:'_dev',label:'面积核验',options:[{v:'over',t:'申报偏差>15%'}],}
+    ],
+    fval:(r,fk)=>fk==='_dev'?(r.dev>0.15?'over':'ok'):r[fk],
+    cols:[
+      {k:'id',t:'地块码（一地一码）',sort:true,render:r=>'<b class="mono">'+r.id+'</b>'},
+      {k:'cname',t:'农户',sort:true,render:r=>esc(r.cname)+'<span class="mono" style="color:var(--ink3);font-size:11px"> '+r.cid+'</span>'},
+      {k:'town',t:'乡镇·村',render:r=>r.town+'·'+r.village},
+      {k:'areaR',t:'遥感面积(亩)',sort:true,render:r=>'<b>'+r.areaR.toFixed(1)+'</b>'},
+      {k:'areaD',t:'申报面积(亩)',sort:true,render:r=>r.areaD.toFixed(1)},
+      {k:'dev',t:'面积核验',sort:true,render:r=>r.dev>0.15?'<span class="tag tg-red">申报虚高 '+Math.round(r.dev*100)+'%</span>':(r.dev>0.05?'<span class="tag tg-orange">偏差 '+Math.round(r.dev*100)+'%</span>':'<span class="tag tg-green">一致</span>')},
+      {k:'alt',t:'海拔(m)',sort:true},
+      {k:'treeAge',t:'树龄',sort:true,render:r=>r.treeAge+' 年'},
+      {k:'status',t:'监测状态',render:r=>'<span class="tag '+(r.status==='正常'?'tg-green':'tg-red')+'">'+r.status+'</span>'},
+      {k:'buildDate',t:'建档日期',sort:true},
+      {k:'_act',t:'操作',render:r=>'<button class="btn btn-d btn-xs" onclick="viewPlot(\''+r.id+'\')">身份证</button> <button class="btn btn-d btn-xs" onclick="editPlot(\''+r.id+'\')">编辑</button> <button class="btn btn-r btn-xs" onclick="delPlot(\''+r.id+'\')">删除</button>'}
+    ]
+  });
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>茶园地块管理</div>'+
+  '<div class="page-title-row"><div><h2>茶园地块管理</h2><div class="sub">遥感圈定 · 亚像元面积量算 · 一地一码赋码 · 历史影像回溯</div></div><button class="btn btn-p" onclick="editPlot(\'\')">＋ 新建地块建档</button></div>'+
+  '<div class="stat-grid">'+
+    statCard('建档地块',DB.plots.length+'<small> 块</small>','物候时序分类 · SCS+C 地形校正','up','一次测绘多年复用','s1','M9 20l-5.5-2.5v-13L9 7l6-2.5L20.5 7v13L15 17.5 9 20ZM9 7v13M15 4.5v13','#e2f7ef','#12805c')+
+    statCard('遥感量算总面积',DB.plots.reduce((s,p)=>s+p.areaR,0).toFixed(1)+'<small> 亩</small>','覆盖 '+new Set(DB.plots.map(p=>p.cid)).size+' 户茶农','up','破碎地块亚像元分解','s2','M3 12l9-8 9 8M5 10v10h5v-6h4v6h5V10','#e8f1fb','#2470a8')+
+    statCard('申报面积偏差户',over+'<small> 块</small>','偏差>15% 一级筛查自动识别','dn','最高虚报 55%','s3','M12 3 2.5 20h19L12 3Zm0 7v4m0 3.5v.5','#fef4e2','#b9770e')+
+    statCard('撂荒监测',DB.plots.filter(p=>p.status!=='正常').length+'<small> 块</small>','多年时序比对持续监测','dn','异常地块转三级复核','s4','M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Zm10 2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z','#f3e9f7','#7d3c98')+
+  '</div>'+
+  '<div class="panel"><div class="panel-b flush">'+body+'</div></div>';
+}
+function editPlot(id){
+  const p=id?DB.plots.find(x=>x.id===id):null;
+  const opts=DB.customers.map(c=>'<option value="'+c.id+'"'+(p&&p.cid===c.id?' selected':'')+'>'+c.name+'（'+c.id+'）</option>').join('');
+  openModal((p?'编辑地块 · '+p.id:'新建地块建档'),
+   '<div class="frow"><label>所属农户 <span class="req">*</span></label><select id="plCust">'+opts+'</select><div class="err">请选择农户</div></div>'+
+   '<div class="f2">'+
+   fInput('plAreaR','遥感量算面积（亩）',p?p.areaR:'',true,'number','0.1')+
+   fInput('plAreaD','农户申报面积（亩）',p?p.areaD:'',true,'number','0.1')+
+   '</div><div class="f3">'+
+   fInput('plAlt','海拔（m）',p?p.alt:700,false,'number')+
+   fInput('plAge','树龄（年）',p?p.treeAge:10,false,'number')+
+   fSelect('plStatus','监测状态',['正常','疑似撂荒'],p?p.status:'正常',true)+
+   '</div>'+
+   '<div class="note green">地块码按"乡镇代码-村代码-序号"自动赋码；遥感面积以亚像元分解量算为准，申报面积偏差>15%将触发一级预警。</div>',
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="savePlot(\''+id+'\')">保存建档</button>');
+}
+function savePlot(id){
+  if(!validate(['plAreaR','plAreaD']))return;
+  const aR=parseFloat($('plAreaR').value),aD=parseFloat($('plAreaD').value);
+  if(!(aR>0)||!(aD>0)){fieldErr('plAreaR','面积必须大于 0');return}
+  const cid=$('plCust').value;const c=cust(cid);
+  if(id){
+    const p=DB.plots.find(x=>x.id===id);
+    Object.assign(p,{cid:cid,areaR:aR,areaD:aD,alt:parseInt($('plAlt').value)||700,treeAge:parseInt($('plAge').value)||10,status:$('plStatus').value});
+    toast('地块 '+id+' 已更新');
+  }else{
+    const nid=TCODE[c.town]+'-'+VCODE[c.village]+'-'+String(DB.seq.plot++).slice(-3);
+    DB.plots.push({id:nid,cid:cid,areaR:aR,areaD:aD,alt:parseInt($('plAlt').value)||700,treeAge:parseInt($('plAge').value)||10,owner:'承包经营权在册',buildDate:today(),status:$('plStatus').value});
+    toast('新地块已建档赋码 '+nid);
+  }
+  // 面积偏差预警联动
+  if((aD-aR)/aR>0.15&&!DB.warns.some(w=>w.cid===cid&&w.type==='申报面积偏差'&&w.st!=='已办结')){
+    DB.warns.push({id:'YJ'+(DB.seq.yj++),cid:cid,type:'申报面积偏差',level:'中',src:'一级全量无感筛查',date:today(),st:'待处置',act:'申报面积较遥感量算偏高 '+Math.round((aD-aR)/aR*100)+'%，按遥感面积建档授信'});
+    toast('申报面积偏差超 15%，已自动生成预警',false);
+  }
+  saveDB();closeModal();render();
+}
+function delPlot(id){
+  openConfirm('删除地块','确认删除地块 <b>'+id+'</b> 的建档信息？',function(){
+    DB.plots=DB.plots.filter(p=>p.id!==id);
+    saveDB();render();toast('地块 '+id+' 已删除');
+  });
+}
+function viewPlot(id){
+  const p=DB.plots.find(x=>x.id===id);if(!p)return;
+  const c=cust(p.cid);
+  const dev=p.areaR>0?(p.areaD-p.areaR)/p.areaR:0;
+  openDrawer('茶园数字身份证 · '+p.id,c?esc(c.name)+' · '+c.town+c.village:'',
+  '<div class="panel"><div class="panel-h"><h3>地块档案</h3><div class="tools"><button class="btn btn-d btn-xs" onclick="closeDrawer();editPlot(\''+id+'\')">编辑</button></div></div><div class="panel-b">'+
+    kv('地块码',p.id)+kv('权属',p.owner)+kv('所属农户',c?esc(c.name)+'（'+c.id+'）':p.cid)+
+    kv('遥感面积 / 申报面积','<b>'+p.areaR.toFixed(1)+'</b> 亩 / '+p.areaD.toFixed(1)+' 亩 '+(dev>0.15?'<span class="tag tg-red">虚高 '+Math.round(dev*100)+'%</span>':'<span class="tag tg-green">核验通过</span>'))+
+    kv('海拔 / 树龄',p.alt+' m / '+p.treeAge+' 年')+kv('建档时间',p.buildDate)+
+    kv('监测状态','<span class="tag '+(p.status==='正常'?'tg-green':'tg-red')+'">'+p.status+'</span>')+
+  '</div></div>'+
+  (c?'<div class="panel"><div class="panel-h"><h3>历史影像回溯 · 冠层时序</h3></div><div class="panel-b">'+chartNDVI(c)+
+  '<div class="legend"><span><i style="background:#1ABB9C;border-radius:99px"></i>NDVI 时序（SCS+C 校正）</span><span><i style="background:#F39C12;border-radius:99px"></i>采摘谷点</span></div>'+
+  '<div class="note green" style="margin-top:10px">茶树四季常绿且采摘期存在周期性扰动，以物候时序特征与林地、果园区分；多年影像比对持续监测撂荒与转包。</div></div></div>':'')+
+  '<div class="panel"><div class="panel-h"><h3>关联业务</h3></div><div class="panel-b">'+
+    (c?kv('管理档位 / M指数',TIERS[c.tier]+' / '+c.M.toFixed(2))+kv('物理账推算收益',(riskOf(c.id)?fmt(riskOf(c.id).rhat):'—')+' 元')+kv('授信额度',(creditOf(c.id)?fmt(creditOf(c.id).total)+' 元':'未授信')):'')+
+    '<button class="btn btn-d btn-xs" onclick="closeDrawer();viewCust(\''+p.cid+'\')">查看农户 360° 档案</button>'+
+  '</div></div>');
+}
+
+/* =====================================================================
+   页面：数据采集中心（五源数据体系，细分为六类采集）
+   ===================================================================== */
+let COLLTAB='sale';
+function pageCollect(){
+  const tabs=[
+    {k:'sale',t:'磅秤交售采集',n:DB.sales.length,icon:'账'},
+    {k:'image',t:'遥感影像采集',n:DB.images.length,icon:'天'},
+    {k:'price',t:'价格采集',n:DB.prices.length,icon:'价'},
+    {k:'weather',t:'气象采集',n:DB.weather.length,icon:'灾'},
+    {k:'agri',t:'农资采工采集',n:DB.agri.length,icon:'人'},
+    {k:'drone',t:'无人机抽检',n:DB.drones.length,icon:'机'}
+  ];
+  let body='';
+  if(COLLTAB==='sale')body=collectSale();
+  else if(COLLTAB==='image')body=collectImage();
+  else if(COLLTAB==='price')body=collectPrice();
+  else if(COLLTAB==='weather')body=collectWeather();
+  else if(COLLTAB==='agri')body=collectAgri();
+  else body=collectDrone();
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>数据采集中心</div>'+
+  '<div class="page-title-row"><div><h2>数据采集中心</h2><div class="sub">五源数据体系 + 无人机按需抽检 · 采集即脱敏 · 数据实时汇入双核核验引擎</div></div></div>'+
+  '<div class="panel"><div class="tabs" style="padding:0 12px">'+tabs.map(t=>'<button class="'+(COLLTAB===t.k?'on':'')+'" onclick="COLLTAB=\''+t.k+'\';render()"><span class="tag '+(COLLTAB===t.k?'tg-green':'tg-gray')+'" style="margin-right:6px">'+t.icon+'</span>'+t.t+'<span class="cnt">'+t.n+'</span></button>').join('')+'</div>'+
+  body+'</div>';
+}
+/* ---- 磅秤交售采集（地账数据源，驱动经济账与动态调额） ---- */
+function collectSale(){
+  const total=DB.sales.reduce((s,x)=>s+x.amount,0);
+  const rows=DB.sales.map(s=>({...s,cname:custName(s.cid)}));
+  const body=buildTable('sale',{
+    rows:rows,searchPh:'搜索单号 / 农户',
+    searchText:r=>r.no+r.cname+r.round+r.grade,
+    filters:[
+      {k:'round',label:'轮次',options:ROUNDS.map(t=>({v:t,t:t}))},
+      {k:'grade',label:'等级',options:GRADES.map(t=>({v:t,t:t}))},
+      {k:'coop',label:'合作社',options:Object.values(COOPS).map(t=>({v:t,t:t}))}
+    ],
+    cols:[
+      {k:'no',t:'交售单号',sort:true,render:r=>'<b class="mono" style="font-size:11.5px">'+r.no+'</b>'},
+      {k:'date',t:'交售时间',sort:true,render:r=>r.date+' '+r.time},
+      {k:'cname',t:'农户',sort:true},
+      {k:'round',t:'轮次',render:r=>'<span class="tag tg-blue">'+r.round+'</span>'},
+      {k:'grade',t:'等级'},
+      {k:'net',t:'净重(kg)',sort:true,render:r=>r.net.toFixed(1)},
+      {k:'price',t:'单价(元/kg)',sort:true},
+      {k:'amount',t:'金额(元)',sort:true,render:r=>'<b style="color:#12805c">'+fmt(r.amount)+'</b>'},
+      {k:'devfp',t:'设备指纹',render:r=>'<span class="mono" style="font-size:11px;color:var(--ink2)">'+r.devfp+'</span>'},
+      {k:'_act',t:'操作',render:r=>'<button class="btn btn-d btn-xs" onclick="editSale(\''+r.no+'\')">编辑</button> <button class="btn btn-r btn-xs" onclick="delSale(\''+r.no+'\')">删除</button>'}
+    ]
+  });
+  return '<div class="panel-b">'+
+  '<div class="stat-grid" style="margin-bottom:14px">'+
+    miniStat('台账笔数',DB.sales.length+' 笔','实时上传 · 不可篡改','#3498DB')+
+    miniStat('交售总额',fmtW(total)+' 元','构成经济账数据底座','#1ABB9C')+
+    miniStat('覆盖农户',new Set(DB.sales.map(s=>s.cid)).size+' 户','3 家合作社联网','#9B59B6')+
+    miniStat('通道状态','国密加密','上传即脱敏 · 附设备指纹','#F39C12')+
+  '</div>'+
+  '<div class="note green" style="margin-bottom:12px">鲜叶离体后必须当日交售初制所，收购磅秤是全产业链唯一能连续、客观、集中记录茶农真实收入的"数据钉子"。<b>新增/删除交售单将实时重算该户经济账、Δ 判定与动态额度。</b></div>'+
+  '<div style="margin-bottom:12px;text-align:right"><button class="btn btn-p" onclick="editSale(\'\')">＋ 录入交售单</button></div>'+
+  body+'</div>';
+}
+function editSale(no){
+  const s=no?DB.sales.find(x=>x.no===no):null;
+  const opts=DB.customers.map(c=>'<option value="'+c.id+'"'+(s&&s.cid===c.id?' selected':'')+'>'+c.name+'（'+c.id+'）</option>').join('');
+  openModal((s?'编辑交售单 '+s.no:'录入交售单'),
+   '<div class="frow"><label>农户 <span class="req">*</span></label><select id="slCust">'+opts+'</select><div class="err">请选择农户</div></div>'+
+   '<div class="f2">'+
+   fSelect('slRound','采摘轮次',ROUNDS,s?s.round:'秋茶',true,'syncSalePrice()')+
+   fSelect('slGrade','鲜叶等级',GRADES,s?s.grade:'一级',true,'syncSalePrice()')+
+   '</div><div class="f2">'+
+   fInput('slDate','交售日期',s?s.date:today(),true,'date')+
+   fInput('slTime','交售时间',s?s.time:'10:30',true,'time')+
+   '</div><div class="f3">'+
+   fInput('slNet','净重（kg）',s?s.net:100,true,'number','0.5')+
+   fInput('slPrice','单价（元/kg）',s?s.price:142,true,'number','1')+
+   '<div class="frow"><label>金额（元，自动）</label><input id="slAmount" type="number" value="'+(s?s.amount:14200)+'" readonly style="background:#f0f4f2;font-weight:700"></div>'+
+   '</div>'+
+   '<div class="note green">保存后实时重算：该户经济账 → Δ 判定 → 风险等级 → 动态额度（α='+DB.settings.alpha+'），超额偏差自动生成预警。</div>',
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="saveSale(\''+no+'\')">保存并上传</button>');
+  syncSalePrice(true);
+}
+function syncSalePrice(keepAmount){
+  const r=$('slRound').value,g=$('slGrade').value;
+  if(!keepAmount)$('slPrice').value=Math.round(ROUND_PRICE[r]*GRADE_F[g]);
+  calcSaleAmount();
+}
+function calcSaleAmount(){
+  const n=parseFloat($('slNet').value)||0,p=parseFloat($('slPrice').value)||0;
+  $('slAmount').value=Math.round(n*p);
+}
+function saveSale(no){
+  if(!validate(['slDate','slTime','slNet','slPrice']))return;
+  const net=parseFloat($('slNet').value),price=parseFloat($('slPrice').value);
+  if(!(net>0)||!(price>0)){fieldErr('slNet','净重与单价必须大于 0');return}
+  const cid=$('slCust').value;const c=cust(cid);
+  const amt=Math.round(net*price);
+  if(no){
+    const s=DB.sales.find(x=>x.no===no);
+    const oldCid=s.cid;
+    Object.assign(s,{cid:cid,round:$('slRound').value,grade:$('slGrade').value,date:$('slDate').value,time:$('slTime').value,net:net,price:price,amount:amt,coop:c.coop});
+    recalcFromSales(cid);if(oldCid!==cid)recalcFromSales(oldCid);
+    toast('交售单 '+no+' 已更新，双账与额度已重算');
+  }else{
+    const nno=TCODE[c.town]+$('slDate').value.replace(/-/g,'')+String(1000+DB.seq.sale++).slice(1);
+    DB.sales.push({no:nno,cid:cid,round:$('slRound').value,grade:$('slGrade').value,date:$('slDate').value,time:$('slTime').value,net:net,price:price,amount:amt,coop:c.coop,devfp:'BS-'+TCODE[c.town]+'-01'});
+    recalcFromSales(cid);
+    toast('交售单 '+nno+' 已加密上传，经济账实时更新');
+  }
+  saveDB();closeModal();render();
+}
+function delSale(no){
+  const s=DB.sales.find(x=>x.no===no);
+  openConfirm('删除交售单','确认删除交售单 <b>'+no+'</b>（'+fmt(s.amount)+' 元）？该户经济账、Δ 判定与动态额度将实时重算。',function(){
+    const cid=s.cid;
+    DB.sales=DB.sales.filter(x=>x.no!==no);
+    recalcFromSales(cid);
+    saveDB();render();toast('交售单已删除，双账已重算');
+  });
+}
+/* ---- 遥感影像采集 ---- */
+function collectImage(){
+  const cloudy=DB.images.filter(i=>i.status==='SAR补全').length;
+  const rows=DB.images.map(i=>({...i}));
+  const body=buildTable('image',{
+    rows:rows,searchPh:'搜索编号 / 乡镇',
+    searchText:r=>r.id+r.sat+r.town+r.status,
+    filters:[
+      {k:'sat',label:'卫星',options:['哨兵二号','哨兵一号SAR'].map(t=>({v:t,t:t}))},
+      {k:'town',label:'乡镇',options:TOWNS.map(t=>({v:t,t:t}))},
+      {k:'status',label:'处理状态',options:['已处理','处理中','SAR补全'].map(t=>({v:t,t:t}))}
+    ],
+    cols:[
+      {k:'id',t:'影像编号',sort:true,render:r=>'<b class="mono">'+r.id+'</b>'},
+      {k:'date',t:'时相日期',sort:true},
+      {k:'sat',t:'数据源',render:r=>'<span class="tag '+(r.sat.includes('SAR')?'tg-purple':'tg-blue')+'">'+r.sat+'</span>'},
+      {k:'town',t:'覆盖乡镇'},
+      {k:'cloud',t:'云量',sort:true,render:r=>'<div style="display:flex;align-items:center;gap:8px"><div class="prog" style="width:70px"><i style="width:'+r.cloud+'%;background:'+(r.cloud>50?'#E74C3C':(r.cloud>25?'#F39C12':'#1ABB9C'))+'"></i></div>'+r.cloud+'%</div>'},
+      {k:'valid',t:'有效像元',sort:true,render:r=>r.valid+'%'},
+      {k:'status',t:'处理状态',render:r=>'<span class="tag '+(r.status==='已处理'?'tg-green':(r.status==='处理中'?'tg-orange':'tg-purple'))+'">'+r.status+'</span>'},
+      {k:'_act',t:'操作',render:r=>'<button class="btn btn-d btn-xs" onclick="editImage(\''+r.id+'\')">编辑</button> <button class="btn btn-r btn-xs" onclick="delRow(\'images\',\''+r.id+'\')">删除</button>'}
+    ]
+  });
+  return '<div class="panel-b">'+
+  '<div class="stat-grid" style="margin-bottom:14px">'+
+    miniStat('在库影像',DB.images.length+' 景','10m 分辨率 · 5 天重访','#1ABB9C')+
+    miniStat('哨兵二号',DB.images.filter(i=>i.sat==='哨兵二号').length+' 景','免费公开数据 · 0 元','#3498DB')+
+    miniStat('SAR 补全',cloudy+' 景','穿云雷达 · 多云区必备','#9B59B6')+
+    miniStat('年度缺失率','22.4%','多时相中值合成后可分析','#F39C12')+
+  '</div>'+
+  '<div class="note green" style="margin-bottom:12px">哨兵二号光学影像（10m、5 天重访）完全免费公开；云雾缺失以哨兵一号 SAR 穿云补全 + 多时相中值合成，山地阴影以 DEM 的 SCS+C 模型校正。</div>'+
+  '<div style="margin-bottom:12px;text-align:right"><button class="btn btn-p" onclick="editImage(\'\')">＋ 登记影像</button></div>'+
+  body+'</div>';
+}
+function editImage(id){
+  const im=id?DB.images.find(x=>x.id===id):null;
+  openModal((im?'编辑影像 '+im.id:'登记遥感影像'),
+   '<div class="f2">'+fInput('imDate','时相日期',im?im.date:today(),true,'date')+fSelect('imSat','数据源',['哨兵二号','哨兵一号SAR'],im?im.sat:'哨兵二号',true)+'</div>'+
+   '<div class="f3">'+fSelect('imTown','覆盖乡镇',TOWNS,im?im.town:'',true)+fInput('imCloud','云量（%）',im?im.cloud:20,true,'number','1')+fInput('imValid','有效像元（%）',im?im.valid:95,true,'number','1')+'</div>'+
+   fSelect('imStatus','处理状态',['已处理','处理中','SAR补全'],im?im.status:'已处理',true),
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="saveImage(\''+id+'\')">保存</button>');
+}
+function saveImage(id){
+  if(!validate(['imDate','imCloud','imValid']))return;
+  const cl=parseInt($('imCloud').value),va=parseInt($('imValid').value);
+  if(!(cl>=0&&cl<=100)||!(va>=0&&va<=100)){fieldErr('imCloud','须在 0~100 之间');return}
+  const obj={date:$('imDate').value,sat:$('imSat').value,town:$('imTown').value,cloud:cl,valid:va,status:$('imStatus').value};
+  if(id){Object.assign(DB.images.find(x=>x.id===id),obj);toast('影像 '+id+' 已更新')}
+  else{DB.images.push({id:'YX'+(DB.seq.img++),...obj});toast('新影像已登记入库')}
+  saveDB();closeModal();render();
+}
+/* ---- 价格采集 ---- */
+function collectPrice(){
+  const rows=DB.prices.map(p=>({...p}));
+  const body=buildTable('price',{
+    rows:rows,searchPh:'搜索轮次 / 等级',
+    searchText:r=>r.round+r.grade+r.source,
+    filters:[{k:'round',label:'轮次',options:ROUNDS.map(t=>({v:t,t:t}))},{k:'grade',label:'等级',options:GRADES.map(t=>({v:t,t:t}))}],
+    cols:[
+      {k:'id',t:'价格编号',sort:true,render:r=>'<b class="mono">'+r.id+'</b>'},
+      {k:'round',t:'采摘轮次',render:r=>'<span class="tag tg-blue">'+r.round+'</span>'},
+      {k:'grade',t:'鲜叶等级'},
+      {k:'price',t:'毛茶折算价(元/kg)',sort:true,render:r=>'<b style="color:#12805c">'+r.price+'</b>'},
+      {k:'date',t:'公示日期',sort:true},
+      {k:'source',t:'来源'},
+      {k:'_act',t:'操作',render:r=>'<button class="btn btn-d btn-xs" onclick="editPrice(\''+r.id+'\')">调价</button> <button class="btn btn-r btn-xs" onclick="delRow(\'prices\',\''+r.id+'\')">删除</button>'}
+    ]
+  });
+  return '<div class="panel-b">'+
+  '<div class="note green" style="margin-bottom:12px">分轮次、分等级产区鲜叶毛茶折算价，用于"产量换算收益"与压力测试基准：三年移动均价 105.6 元/kg，悲观情景价 88.0 元/kg（下浮约 17%）。同一农户春茶折算价可达 168 元/kg，暑茶仅 74 元/kg——静态评估收益几乎无意义。</div>'+
+  '<div style="margin-bottom:12px;text-align:right"><button class="btn btn-p" onclick="editPrice(\'\')">＋ 登记价格</button></div>'+
+  body+'</div>';
+}
+function editPrice(id){
+  const p=id?DB.prices.find(x=>x.id===id):null;
+  openModal((p?'调整价格 '+p.id:'登记价格'),
+   '<div class="f2">'+fSelect('prRound','采摘轮次',ROUNDS,p?p.round:'',true)+fSelect('prGrade','鲜叶等级',GRADES,p?p.grade:'',true)+'</div>'+
+   '<div class="f2">'+fInput('prPrice','毛茶折算价（元/kg）',p?p.price:'',true,'number','1')+fInput('prDate','公示日期',p?p.date:today(),true,'date')+'</div>',
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="savePrice(\''+id+'\')">保存</button>');
+}
+function savePrice(id){
+  if(!validate(['prPrice','prDate']))return;
+  const pr=parseInt($('prPrice').value);
+  if(!(pr>0)){fieldErr('prPrice','价格必须大于 0');return}
+  const obj={round:$('prRound').value,grade:$('prGrade').value,price:pr,date:$('prDate').value,source:'产区公示价'};
+  if(id){Object.assign(DB.prices.find(x=>x.id===id),obj);toast('价格已更新')}
+  else{DB.prices.push({id:'JG'+(DB.seq.jg++),...obj});toast('新价格已登记')}
+  ROUND_PRICE[obj.round]=Math.round(DB.prices.filter(p=>p.round===obj.round).reduce((s,p)=>s+p.price,0)/Math.max(1,DB.prices.filter(p=>p.round===obj.round).length)/GRADE_F['一级']);
+  saveDB();closeModal();render();
+}
+/* ---- 气象采集 ---- */
+function collectWeather(){
+  const rows=DB.weather.map(w=>({...w}));
+  const body=buildTable('weather',{
+    rows:rows,searchPh:'搜索类型 / 区域 / 影响',
+    searchText:r=>r.type+r.area+r.impact,
+    filters:[{k:'type',label:'事件类型',options:['倒春寒','强冷空气','连阴雨','高温干旱','台风外围降水','寒露风','晴好'].map(t=>({v:t,t:t}))}],
+    cols:[
+      {k:'id',t:'记录编号',sort:true,render:r=>'<b class="mono">'+r.id+'</b>'},
+      {k:'date',t:'日期',sort:true},
+      {k:'type',t:'事件类型',render:r=>'<span class="tag '+(r.type==='晴好'?'tg-green':(['倒春寒','高温干旱','寒露风'].includes(r.type)?'tg-red':'tg-orange'))+'">'+r.type+'</span>'},
+      {k:'area',t:'影响区域'},
+      {k:'impact',t:'影响与处置',render:r=>'<span style="white-space:normal;display:inline-block;max-width:420px">'+esc(r.impact)+'</span>'},
+      {k:'source',t:'来源'},
+      {k:'_act',t:'操作',render:r=>'<button class="btn btn-d btn-xs" onclick="editWeather(\''+r.id+'\')">编辑</button> <button class="btn btn-r btn-xs" onclick="delRow(\'weather\',\''+r.id+'\')">删除</button>'}
+    ]
+  });
+  return '<div class="panel-b">'+
+  '<div class="note" style="margin-bottom:12px">倒春寒、干旱、连阴雨等气象记录用于解释产量波动：遥感冠层指数骤降 + 气象记录联合判定灾损后，自动触发<b>贷款展期与气象指数保险理赔</b>，避免灾年抽贷断贷。</div>'+
+  '<div style="margin-bottom:12px;text-align:right"><button class="btn btn-p" onclick="editWeather(\'\')">＋ 登记气象事件</button></div>'+
+  body+'</div>';
+}
+function editWeather(id){
+  const w=id?DB.weather.find(x=>x.id===id):null;
+  openModal((w?'编辑气象记录 '+w.id:'登记气象事件'),
+   '<div class="f2">'+fInput('weDate','日期',w?w.date:today(),true,'date')+fSelect('weType','事件类型',['倒春寒','强冷空气','连阴雨','高温干旱','台风外围降水','寒露风','晴好'],w?w.type:'',true)+'</div>'+
+   fInput('weArea','影响区域',w?w.area:'全县',true)+
+   '<div class="frow"><label>影响与处置 <span class="req">*</span></label><textarea id="weImpact" rows="3">'+(w?esc(w.impact):'')+'</textarea><div class="err">请填写影响说明</div></div>',
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="saveWeather(\''+id+'\')">保存</button>');
+}
+function saveWeather(id){
+  if(!validate(['weDate','weArea','weImpact']))return;
+  const obj={date:$('weDate').value,type:$('weType').value,area:$('weArea').value,impact:$('weImpact').value,source:'县气象局'};
+  if(id){Object.assign(DB.weather.find(x=>x.id===id),obj);toast('气象记录已更新')}
+  else{
+    DB.weather.push({id:'QX'+(DB.seq.qx++),...obj});
+    if(['倒春寒','高温干旱'].includes(obj.type)){
+      DB.warns.push({id:'YJ'+(DB.seq.yj++),cid:'AX-XH-0019',type:'灾损预警',level:'高',src:'气象联动',date:today(),st:'待处置',act:obj.type+'事件登记，建议启动灾损联合研判（展期+指数险）'});
+      toast('灾害类事件已联动生成灾损预警',false);
+    }else toast('气象事件已登记');
+  }
+  saveDB();closeModal();render();
+}
+/* ---- 农资采工采集 ---- */
+function collectAgri(){
+  const rows=DB.agri.map(a=>({...a,cname:custName(a.cid)}));
+  const body=buildTable('agri',{
+    rows:rows,searchPh:'搜索农户 / 类型',
+    searchText:r=>r.cname+r.type+r.proof+r.note,
+    filters:[{k:'type',label:'类型',options:['农资购买','采工工资'].map(t=>({v:t,t:t}))},{k:'proof',label:'佐证状态',options:['已核验','现金结算·待补充'].map(t=>({v:t,t:t}))}],
+    cols:[
+      {k:'id',t:'记录编号',sort:true,render:r=>'<b class="mono">'+r.id+'</b>'},
+      {k:'cname',t:'农户',sort:true},
+      {k:'type',t:'类型',render:r=>'<span class="tag '+(r.type==='农资购买'?'tg-blue':'tg-purple')+'">'+r.type+'</span>'},
+      {k:'amount',t:'金额(元)',sort:true,render:r=>'<b>'+fmt(r.amount)+'</b>'},
+      {k:'date',t:'日期',sort:true},
+      {k:'proof',t:'佐证状态',render:r=>'<span class="tag '+(r.proof==='已核验'?'tg-green':'tg-orange')+'">'+r.proof+'</span>'},
+      {k:'note',t:'说明',render:r=>'<span style="white-space:normal;display:inline-block;max-width:280px" class="mono" style="font-size:12px">'+esc(r.note)+'</span>'},
+      {k:'_act',t:'操作',render:r=>'<button class="btn btn-d btn-xs" onclick="editAgri(\''+r.id+'\')">编辑</button> <button class="btn btn-r btn-xs" onclick="delRow(\'agri\',\''+r.id+'\')">删除</button>'}
+    ]
+  });
+  return '<div class="panel-b">'+
+  '<div class="note green" style="margin-bottom:12px">农资购买与采工工资是二级多源交叉比对的关键佐证：双账出现缺口时，若农资投入与采工记录和推算产出匹配，可证明茶园真实经营，误扰户即可在二级洗清、避免误拒。</div>'+
+  '<div style="margin-bottom:12px;text-align:right"><button class="btn btn-p" onclick="editAgri(\'\')">＋ 登记佐证记录</button></div>'+
+  body+'</div>';
+}
+function editAgri(id){
+  const a=id?DB.agri.find(x=>x.id===id):null;
+  const opts=DB.customers.map(c=>'<option value="'+c.id+'"'+(a&&a.cid===c.id?' selected':'')+'>'+c.name+'（'+c.id+'）</option>').join('');
+  openModal((a?'编辑佐证记录 '+a.id:'登记农资/采工佐证'),
+   '<div class="frow"><label>农户 <span class="req">*</span></label><select id="agCust">'+opts+'</select><div class="err">请选择农户</div></div>'+
+   '<div class="f2">'+fSelect('agType','类型',['农资购买','采工工资'],a?a.type:'',true)+fInput('agAmount','金额（元）',a?a.amount:'',true,'number','10')+'</div>'+
+   '<div class="f2">'+fInput('agDate','日期',a?a.date:today(),true,'date')+fSelect('agProof','佐证状态',['已核验','现金结算·待补充'],a?a.proof:'已核验',true)+'</div>'+
+   '<div class="frow"><label>说明</label><input id="agNote" value="'+(a?esc(a.note):'')+'" placeholder="例如：复合肥采购，农资店联网台账"></div>',
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="saveAgri(\''+id+'\')">保存</button>');
+}
+function saveAgri(id){
+  if(!validate(['agAmount','agDate']))return;
+  const amt=parseInt($('agAmount').value);
+  if(!(amt>0)){fieldErr('agAmount','金额必须大于 0');return}
+  const obj={cid:$('agCust').value,type:$('agType').value,amount:amt,date:$('agDate').value,proof:$('agProof').value,note:$('agNote').value};
+  if(id){Object.assign(DB.agri.find(x=>x.id===id),obj);toast('佐证记录已更新')}
+  else{DB.agri.push({id:'NZ'+(DB.seq.nz++),...obj});toast('佐证记录已登记')}
+  saveDB();closeModal();render();
+}
+/* ---- 无人机抽检 ---- */
+function collectDrone(){
+  const rows=DB.drones.map(d=>({...d,cname:custName(d.cid)}));
+  const body=buildTable('drone',{
+    rows:rows,searchPh:'搜索农户 / 事由',
+    searchText:r=>r.cname+r.reason+r.result+r.op,
+    filters:[{k:'status',label:'状态',options:['已完成','已排期'].map(t=>({v:t,t:t}))}],
+    cols:[
+      {k:'id',t:'任务编号',sort:true,render:r=>'<b class="mono">'+r.id+'</b>'},
+      {k:'date',t:'执行日期',sort:true},
+      {k:'cname',t:'对象农户',sort:true},
+      {k:'reason',t:'抽检事由',render:r=>'<span style="white-space:normal;display:inline-block;max-width:220px">'+esc(r.reason)+'</span>'},
+      {k:'result',t:'结论',render:r=>'<span style="white-space:normal;display:inline-block;max-width:260px">'+esc(r.result)+'</span>'},
+      {k:'op',t:'执行人'},
+      {k:'status',t:'状态',render:r=>'<span class="tag '+(r.status==='已完成'?'tg-green':'tg-orange')+'">'+r.status+'</span>'},
+      {k:'_act',t:'操作',render:r=>'<button class="btn btn-d btn-xs" onclick="editDrone(\''+r.id+'\')">编辑</button> <button class="btn btn-r btn-xs" onclick="delRow(\'drones\',\''+r.id+'\')">删除</button>'}
+    ]
+  });
+  return '<div class="panel-b">'+
+  '<div class="note" style="margin-bottom:12px">无人机按需抽检是三级精准实地复核的手段之一：仅对二级比对仍无法解释的少数样本（约 4%）启用，单户成本约 400 元，把昂贵手段集中消耗在真正有问题的样本上。</div>'+
+  '<div style="margin-bottom:12px;text-align:right"><button class="btn btn-p" onclick="editDrone(\'\')">＋ 新建抽检任务</button></div>'+
+  body+'</div>';
+}
+function editDrone(id){
+  const d=id?DB.drones.find(x=>x.id===id):null;
+  const opts=DB.customers.map(c=>'<option value="'+c.id+'"'+(d&&d.cid===c.id?' selected':'')+'>'+c.name+'（'+c.id+'）</option>').join('');
+  openModal((d?'编辑抽检任务 '+d.id:'新建无人机抽检任务'),
+   '<div class="frow"><label>对象农户 <span class="req">*</span></label><select id="drCust">'+opts+'</select><div class="err">请选择农户</div></div>'+
+   '<div class="f2">'+fInput('drDate','执行日期',d?d.date:today(),true,'date')+fInput('drOp','执行人',d?d.op:'王铮',true)+'</div>'+
+   '<div class="frow"><label>抽检事由 <span class="req">*</span></label><input id="drReason" value="'+(d?esc(d.reason):'')+'" placeholder="例如：双账显著不符·三级复核"><div class="err">请填写事由</div></div>'+
+   '<div class="frow"><label>结论</label><textarea id="drResult" rows="2">'+(d?esc(d.result):'')+'</textarea></div>'+
+   fSelect('drStatus','状态',['已排期','已完成'],d?d.status:'已排期',true),
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="saveDrone(\''+id+'\')">保存</button>');
+}
+function saveDrone(id){
+  if(!validate(['drDate','drOp','drReason']))return;
+  const obj={cid:$('drCust').value,date:$('drDate').value,op:$('drOp').value,reason:$('drReason').value,result:$('drResult').value||'待执行',status:$('drStatus').value};
+  if(id){Object.assign(DB.drones.find(x=>x.id===id),obj);toast('抽检任务已更新')}
+  else{DB.drones.push({id:'WR'+(DB.seq.wr++),...obj});toast('抽检任务已创建并排期')}
+  saveDB();closeModal();render();
+}
+/* 通用删除 */
+function delRow(table,id){
+  openConfirm('删除记录','确认删除记录 <b>'+id+'</b>？',function(){
+    DB[table]=DB[table].filter(x=>x.id!==id);
+    saveDB();render();toast('记录 '+id+' 已删除');
+  });
+}
+
+/* =====================================================================
+   页面：收益评估中心（评估结果可视化）
+   ===================================================================== */
+let ASSESS_SEL=null;
+function pageAssess(){
+  if(!ASSESS_SEL||!cust(ASSESS_SEL))ASSESS_SEL=DB.customers[0].id;
+  const c=cust(ASSESS_SEL),rk=riskOf(ASSESS_SEL),cr=creditOf(ASSESS_SEL);
+  const opts=DB.customers.map(x=>'<option value="'+x.id+'" '+(x.id===ASSESS_SEL?'selected':'')+'>'+x.name+'（'+x.id+' · '+x.town+'）</option>').join('');
+  const points=DB.risks.filter(r=>r.ract>0).map(r=>({x:r.rhat,y:r.ract,cid:r.cid,color:r.level==='低'?'#1ABB9C':(r.level==='中'?'#F39C12':'#E74C3C'),label:custName(r.cid)+'\nR̂ '+fmt(r.rhat)+' / 实测 '+fmt(r.ract)+'\nΔ='+(r.delta>0?'+':'')+r.delta.toFixed(3)+' · '+r.verdict}));
+  const saleByRound=ROUNDS.map(r=>({label:r,value:salesOf(ASSESS_SEL).filter(s=>s.round===r).reduce((s,x)=>s+x.amount,0),color:'#3498DB'}));
+  const fM=0.38+0.40*c.M;
+  const y=DB.settings.ybase*fM;
+  const P=105.6*(0.80+0.34*c.M);
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>收益评估中心</div>'+
+  '<div class="page-title-row"><div><h2>收益评估中心</h2><div class="sub">穿透式评估：不仅给出结论，还给出结论赖以成立的完整证据链</div></div></div>'+
+  '<div class="panel"><div class="panel-b" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b>评估对象：</b><select style="border:1px solid var(--line);border-radius:5px;padding:8px 11px;min-width:260px" onchange="ASSESS_SEL=this.value;render()">'+opts+'</select>'+
+  '<span class="tag '+(c.tier===2?'tg-green':(c.tier===1?'tg-orange':'tg-red'))+'">'+TIERS[c.tier]+'</span>'+
+  (rk?'<span class="tag '+(rk.level==='低'?'tg-green':(rk.level==='中'?'tg-orange':'tg-red'))+'">'+rk.verdict+'</span>':'')+
+  '<span style="margin-left:auto"><button class="btn btn-d btn-xs" onclick="viewRisk(\''+ASSESS_SEL+'\')">完整证据链</button> <button class="btn btn-p btn-xs" onclick="reassess(\''+ASSESS_SEL+'\')">重新评估</button></span></div></div>'+
+  '<div class="grid2">'+
+    '<div class="panel"><div class="panel-h"><h3>采摘扰动指纹（天眼核验）</h3><span class="sub">全年 '+c.rounds+' 轮清晰锯齿 · 几乎无法伪造</span></div><div class="panel-b">'+chartNDVI(c)+
+    '<div class="legend"><span><i style="background:#1ABB9C;border-radius:99px"></i>冠层 NDVI 时序</span><span><i style="background:#F39C12;border-radius:99px"></i>采摘谷点</span></div>'+
+    '<div style="margin-top:10px">'+kv('锯齿数量（采摘轮次 n）',c.rounds+' 轮 · 经营积极程度')+kv('平均谷深 d',c.d.toFixed(3)+' · 单轮采摘强度')+kv('平均回升斜率 r',c.r.toFixed(3)+' · 肥水管理与树势')+'</div>'+
+    '<div class="formula" style="margin-top:8px">M = 0.4102·n + 0.2824·d + 0.3074·r（极差标准化）= <b>'+c.M.toFixed(2)+'</b>　→　'+TIERS[c.tier]+'</div></div></div>'+
+    '<div class="panel"><div class="panel-h"><h3>物理账产能推算（机理+统计混合模型）</h3></div><div class="panel-b">'+
+    '<div class="stat-grid" style="grid-template-columns:repeat(2,1fr)">'+
+      miniStat('推算单产 Ŷ',y.toFixed(1)+' kg/亩',DB.settings.ybase+' × f(M) '+fM.toFixed(3),'#1ABB9C')+
+      miniStat('推算产量 Q̂',fmt(c.area*y)+' kg',c.area.toFixed(1)+' 亩 × '+y.toFixed(1),'#3498DB')+
+      miniStat('推算单价 P̂',P.toFixed(1)+' 元/kg','105.6 × '+(0.80+0.34*c.M).toFixed(3),'#9B59B6')+
+      miniStat('物理账 R̂',rk?fmt(rk.rhat)+' 元':'—','"这座山能产出多少"','#F39C12')+
+    '</div>'+
+    '<div class="formula">R̂ = A × Ŷ × P̂ = '+c.area.toFixed(1)+' × '+y.toFixed(1)+' × '+P.toFixed(1)+' = <b>'+(rk?fmt(rk.rhat):'—')+' 元</b></div>'+
+    '<div style="margin-top:12px"><b style="font-size:13px">经济账构成（磅秤台账分轮次）</b>'+(saleByRound.some(x=>x.value>0)?chartBars(saleByRound.filter(x=>true),560,180):'<div class="empty">暂无交售台账，请先在数据采集中心录入</div>')+'</div></div></div>'+
+  '</div>'+
+  '<div class="grid2">'+
+    '<div class="panel"><div class="panel-h"><h3>双账比对四象限（全体农户）</h3><span class="sub">点击散点查看证据链</span></div><div class="panel-b">'+chartScatter(points)+
+    '<div class="legend"><span><i style="background:#1ABB9C;border-radius:99px"></i>一致—正常</span><span><i style="background:#F39C12;border-radius:99px"></i>关注—待核</span><span><i style="background:#E74C3C;border-radius:99px"></i>异常—实核/拦截</span></div></div></div>'+
+    '<div class="panel"><div class="panel-h"><h3>评估结论与授信联动</h3></div><div class="panel-b">'+
+    (rk?kv('一致性偏差 Δ','<b style="color:'+(rk.level==='低'?'#12805c':(rk.level==='中'?'#b9770e':'#c0392b'))+'">'+(rk.delta>0?'+':'')+rk.delta.toFixed(3)+'</b>（θ2='+DB.settings.th2+' / θ3='+DB.settings.th3+'）')+
+    kv('判定结论','<span class="tag '+(rk.level==='低'?'tg-green':(rk.level==='中'?'tg-orange':'tg-red'))+'">'+rk.verdict+'</span>')+
+    kv('处置路径',rk.level==='低'?'一级筛查直通，直接核可':(rk.level==='中'?'二级多源交叉比对（农资/采工/合作社评定佐证）':'三级精准实地复核（无人机抽检或上门）')):'')+
+    (cr?(kv('基础额度 L₀',fmt(cr.base)+' 元')+kv('采期流水上调','+'+fmt(cr.dynAdd)+' 元')+kv('当前可用额度','<b style="color:#12805c">'+fmt(cr.total-cr.used)+' 元</b>')+kv('执行利率',cr.rate.toFixed(2)+'%（LPR+'+(cr.rate-DB.settings.lpr).toFixed(2)+'pct）')):kv('授信状态','尚未授信'))+
+    '<div class="formula" style="margin-top:10px">L₀ = A × Ŷ × '+DB.settings.ppess+'（悲观价）× '+DB.settings.deltaLoss+'（δ）× '+DB.settings.kappa+'（κ）= <b>'+fmt(suggestLimit(c))+' 元</b>'+(c.tier===2?'（精细管理上浮15%后）':(c.tier===0?'（粗放下浮20%后）':''))+'</div>'+
+    '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-p btn-xs" onclick="calcLimit(\''+ASSESS_SEL+'\')">额度测算明细</button><button class="btn btn-d btn-xs" onclick="closeDrawer();editApp(\'\')">发起授信申请</button><button class="btn btn-d btn-xs" onclick="closeDrawer();viewCust(\''+ASSESS_SEL+'\')">农户360°档案</button></div>'+
+    '</div></div>'+
+  '</div>';
+}
+function calcLimit(cid){
+  const c=cust(cid);const s=DB.settings;
+  const y=s.ybase*(0.38+0.40*c.M);
+  const q=c.area*y;
+  const base0=q*s.ppess*s.deltaLoss*s.kappa;
+  const uplift=c.tier===2?1.15:(c.tier===0?0.8:1);
+  openModal('额度测算明细 · '+c.id,
+   kv('遥感面积 A',c.area.toFixed(1)+' 亩')+
+   kv('推算单产 Ŷ',y.toFixed(1)+' kg/亩（'+s.ybase+' × f(M) '+(0.38+0.40*c.M).toFixed(3)+'）')+
+   kv('推算产量 Q̂',fmt(q)+' kg')+
+   kv('悲观情景价 Ppess',s.ppess+' 元/kg（较三年均价 105.6 下浮约17%）')+
+   kv('采运折损 δ × 授信折扣 κ',s.deltaLoss+' × '+s.kappa)+
+   kv('悲观情景基准',fmt(base0)+' 元')+
+   kv('档位系数','× '+uplift+'（'+TIERS[c.tier]+'）')+
+   '<div class="formula" style="margin-top:8px">L₀ = '+fmt(q)+' × '+s.ppess+' × '+s.deltaLoss+' × '+s.kappa+' × '+uplift+' ≈ <b>'+fmt(suggestLimit(c))+' 元</b></div>'+
+   '<div class="note green" style="margin-top:10px">按悲观情景核定可避免价格顺周期风险；采期内额度随真实交售流水按 α='+s.alpha+' 动态上调。</div>',
+   '<button class="btn btn-d" onclick="closeModal()">关闭</button><button class="btn btn-p" onclick="closeModal();editApp(\'\')">按此额度发起申请</button>');
+}
+
+/* =====================================================================
+   页面：授信申请管理
+   ===================================================================== */
+function pageApply(){
+  const rows=DB.apps.map(a=>({...a,cname:custName(a.cid)}));
+  const body=buildTable('apply',{
+    rows:rows,searchPh:'搜索申请编号 / 客户 / 用途',
+    searchText:r=>r.id+r.cname+r.purpose+r.status,
+    filters:[
+      {k:'status',label:'状态',options:APP_STATUS.map(s=>({v:s,t:s}))},
+      {k:'channel',label:'进件渠道',options:['农户移动端','合作社批量','银行柜面代录'].map(s=>({v:s,t:s}))},
+      {k:'term',label:'期限',options:[{v:12,t:'12 个月'},{v:24,t:'24 个月'}]}
+    ],
+    cols:[
+      {k:'id',t:'申请编号',sort:true,render:r=>'<b class="mono">'+r.id+'</b>'},
+      {k:'cname',t:'客户',sort:true},
+      {k:'amount',t:'申请金额(元)',sort:true,render:r=>'<b>'+fmt(r.amount)+'</b>'},
+      {k:'purpose',t:'用途'},
+      {k:'term',t:'期限',sort:true,render:r=>r.term+' 个月'},
+      {k:'channel',t:'渠道'},
+      {k:'date',t:'申请日期',sort:true},
+      {k:'status',t:'状态',sort:true,render:r=>'<span class="tag '+APP_CLS[r.status]+'">'+r.status+'</span>'},
+      {k:'_act',t:'操作',render:r=>'<button class="btn btn-d btn-xs" onclick="viewApp(\''+r.id+'\')">详情</button> '+(['待初审','复核中','终审中'].includes(r.status)?'<button class="btn btn-d btn-xs" onclick="editApp(\''+r.id+'\')">编辑</button> ':'')+'<button class="btn btn-r btn-xs" onclick="delApp(\''+r.id+'\')">删除</button>'}
+    ]
+  });
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>授信申请管理</div>'+
+  '<div class="page-title-row"><div><h2>授信申请管理</h2><div class="sub">申请受理 · 材料登记 · 共 '+DB.apps.length+' 笔</div></div><button class="btn btn-p" onclick="editApp(\'\')">＋ 新增申请</button></div>'+
+  '<div class="panel"><div class="panel-b flush">'+body+'</div></div>';
+}
+function editApp(id){
+  const a=id?appOf(id):null;
+  const opts=DB.customers.map(c=>'<option value="'+c.id+'"'+(a&&a.cid===c.id?' selected':'')+'>'+c.name+'（'+c.id+' · '+c.town+'）</option>').join('');
+  openModal((a?'编辑申请 · '+a.id:'新增授信申请'),
+   '<div class="frow"><label>客户 <span class="req">*</span></label><select id="apCust" onchange="syncAppSuggest()">'+opts+'</select><div class="err">请选择客户</div></div>'+
+   '<div class="f2">'+
+   fInput('apAmount','申请金额（元）',a?a.amount:'',true,'number','100')+
+   fSelect('apTerm','借款期限',['12','24'],a?String(a.term):'',true)+
+   '</div>'+
+   '<div id="apSuggest"></div>'+
+   fSelect('apPurpose','借款用途',PURPOSES,a?a.purpose:'',true)+
+   '<div class="frow"><label>备注说明</label><textarea id="apNote" rows="2" placeholder="补充经营情况、资金安排等（选填）">'+(a?esc(a.note||''):'')+'</textarea></div>'+
+   '<div class="note green">提交后进入审批流程：初审（客户经理）→ 复核（风控主管）→ 终审（支行行长）。系统自动调取该客户双账核验结论作为审批依据。</div>',
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="saveApp(\''+id+'\')">'+(a?'保存修改':'提交申请')+'</button>');
+  syncAppSuggest();
+}
+function syncAppSuggest(){
+  const el=$('apSuggest');if(!el||!$('apCust'))return;
+  const c=cust($('apCust').value);const rk=c?riskOf(c.id):null;
+  el.innerHTML=c?'<div class="note green" style="margin-bottom:12px">双账核验：'+(rk?rk.verdict+'，Δ='+(rk.delta>0?'+':'')+rk.delta.toFixed(3):'暂无')+'；系统建议额度 <b>'+fmt(suggestLimit(c))+'</b> 元（<span style="cursor:pointer;text-decoration:underline" onclick="$(\'apAmount\').value='+suggestLimit(c)+'">点击填入</span>）</div>':'';
+}
+function saveApp(id){
+  if(!validate(['apAmount']))return;
+  const amount=parseInt($('apAmount').value);
+  if(!(amount>=1000&&amount<=500000)){fieldErr('apAmount','金额须在 1,000 ~ 500,000 元之间');return}
+  if(id){
+    const a=appOf(id);
+    Object.assign(a,{cid:$('apCust').value,amount:amount,term:+$('apTerm').value,purpose:$('apPurpose').value,note:$('apNote').value});
+    toast('申请 '+id+' 已更新');
+  }else{
+    const nid='SQ'+(DB.seq.app++);
+    DB.apps.push({id:nid,cid:$('apCust').value,amount:amount,term:+$('apTerm').value,purpose:$('apPurpose').value,note:$('apNote').value,date:today(),status:'待初审',channel:'银行柜面代录',node:1});
+    toast('申请 '+nid+' 已提交，进入初审环节');
+  }
+  saveDB();closeModal();render();
+}
+function delApp(id){
+  openConfirm('删除申请','确认删除授信申请 <b>'+id+'</b>？关联审批流水将一并删除。',function(){
+    DB.apps=DB.apps.filter(a=>a.id!==id);
+    DB.flows=DB.flows.filter(f=>f.appId!==id);
+    saveDB();render();toast('申请 '+id+' 已删除');
+  });
+}
+function viewApp(id){
+  const a=appOf(id);if(!a)return;
+  const c=cust(a.cid),rk=riskOf(a.cid);
+  const flows=DB.flows.filter(f=>f.appId===id);
+  const nodes=['初审','复核','终审','放款'];
+  const curNode=a.status==='待初审'?0:(a.status==='复核中'?1:(a.status==='终审中'?2:4));
+  openDrawer('授信申请 · '+a.id,esc(custName(a.cid)),
+  '<div class="panel"><div class="panel-h"><h3>申请信息</h3><div class="tools">'+(['待初审','复核中','终审中'].includes(a.status)?'<button class="btn btn-d btn-xs" onclick="closeDrawer();editApp(\''+id+'\')">编辑</button>':'')+'</div></div><div class="panel-b">'+
+    kv('申请编号',a.id)+kv('客户',esc(custName(a.cid)))+kv('申请金额','<b style="color:#12805c">'+fmt(a.amount)+' 元</b>')+
+    kv('期限 / 渠道',a.term+' 个月 / '+a.channel)+kv('借款用途',esc(a.purpose))+(a.note?kv('备注',esc(a.note)):'')+
+    kv('申请日期',a.date)+kv('当前状态','<span class="tag '+APP_CLS[a.status]+'">'+a.status+'</span>')+
+  '</div></div>'+
+  (c&&rk?'<div class="panel"><div class="panel-h"><h3>双账核验结论（审批依据）</h3></div><div class="panel-b">'+
+    kv('管理档位 / M指数',TIERS[c.tier]+' / '+c.M.toFixed(2))+
+    kv('物理账推算收益',fmt(rk.rhat)+' 元')+kv('经济账实测收益',rk.ract?fmt(rk.ract)+' 元':'—')+
+    kv('一致性偏差 Δ',(rk.delta>0?'+':'')+rk.delta.toFixed(3)+'（θ2='+DB.settings.th2+' / θ3='+DB.settings.th3+'）')+
+    kv('判定','<span class="tag '+(rk.level==='低'?'tg-green':(rk.level==='中'?'tg-orange':'tg-red'))+'">'+rk.verdict+'</span>')+
+  '</div></div>':'')+
+  '<div class="panel"><div class="panel-h"><h3>审批进度</h3></div><div class="panel-b">'+
+    '<div style="display:flex;gap:0;margin-bottom:18px">'+nodes.map((n,i)=>{
+      const done=flows.some(f=>f.node===n),cur=(a.status==='已拒绝'&&i===2)||(i===curNode&&['待初审','复核中','终审中'].includes(a.status));
+      return '<div style="flex:1;text-align:center;position:relative"><div style="width:26px;height:26px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;'+(done?'background:#1ABB9C;color:#fff':(cur?'background:#F39C12;color:#fff':'background:#e5ebf0;color:#93a5b8'))+'">'+(i+1)+'</div><div style="font-size:12px;margin-top:5px;color:'+(done||cur?'#333c46':'#93a5b8')+'">'+n+'</div>'+(i<3?'<div style="position:absolute;top:13px;left:calc(50% + 15px);right:calc(-50% + 15px);height:2px;background:'+(flows.some(f=>f.node===nodes[i+1])?'#1ABB9C':'#e5ebf0')+'"></div>':'')+'</div>'}).join('')+'</div>'+
+    '<div class="tline">'+(flows.length?flows.map(f=>'<div class="tl-item"><div class="dot" style="background:'+(f.act==='拒绝'?'#E74C3C':'#1ABB9C')+'"></div><div class="tm">'+f.time+'</div><b>'+f.node+' · '+f.act+'</b><span style="font-size:12px;color:var(--ink2)">（'+esc(f.op)+'）</span><p>'+esc(f.comment)+'</p></div>').join(''):'<div class="empty">等待初审</div>')+'</div>'+
+  '</div></div>'+
+  (['待初审','复核中','终审中'].includes(a.status)?'<div style="display:flex;gap:10px"><button class="btn btn-p" style="flex:1;justify-content:center" onclick="closeDrawer();go(\'approval\')">前往审批处理</button></div>':''));
+}
+
+/* =====================================================================
+   页面：审批流程管理
+   ===================================================================== */
+function pageApproval(){
+  const todo=DB.apps.filter(a=>['待初审','复核中','终审中'].includes(a.status)).sort((a,b)=>a.date.localeCompare(b.date));
+  const done=[...DB.flows].sort((a,b)=>b.time.localeCompare(a.time)).slice(0,30);
+  const nodeName=a=>a.status==='待初审'?'初审（客户经理）':(a.status==='复核中'?'复核（风控主管）':'终审（支行行长）');
+  const todoHtml=todo.length?todo.map(a=>{
+    const c=cust(a.cid),rk=riskOf(a.cid);
+    return '<div class="panel" style="border-left:3px solid '+(a.status==='待初审'?'#F39C12':(a.status==='复核中'?'#3498DB':'#9B59B6'))+'"><div class="panel-b">'+
+    '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">'+
+      '<div style="flex:1;min-width:230px"><b class="mono">'+a.id+'</b> · '+esc(custName(a.cid))+'<div class="sub" style="font-size:12px;color:var(--ink2);margin-top:3px">'+esc(a.purpose)+' · '+a.term+' 个月 · 申请于 '+a.date+'</div></div>'+
+      '<div style="text-align:right"><div style="font-size:18px;font-weight:700;color:#12805c">'+fmt(a.amount)+' 元</div><div style="font-size:11px;color:var(--ink2)">当前节点：'+nodeName(a)+'</div></div>'+
+      '<div style="display:flex;flex-direction:column;gap:6px"><button class="btn btn-p btn-xs" onclick="approve(\''+a.id+'\',true)">通 过</button><button class="btn btn-r btn-xs" onclick="approve(\''+a.id+'\',false)">驳 回</button><button class="btn btn-d btn-xs" onclick="viewApp(\''+a.id+'\')">查看详情</button></div>'+
+    '</div>'+
+    (rk?'<div class="note '+(rk.level==='高'?'red':'green')+'" style="margin-top:10px">双账核验：物理账 '+fmt(rk.rhat)+' 元 / 经济账 '+fmt(rk.ract)+' 元，Δ='+(rk.delta>0?'+':'')+rk.delta.toFixed(3)+'，判定「'+rk.verdict+'」；管理档位 '+TIERS[c.tier]+'（M='+c.M.toFixed(2)+'）。'+(rk.level==='高'?'建议驳回或转三级实地复核。':'核验通过，建议按档位核定额度。')+'</div>':'')+
+    '</div></div>';
+  }).join(''):'<div class="panel"><div class="empty">审批队列已清空，所有申请均已处理完毕</div></div>';
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>审批流程管理</div>'+
+  '<div class="page-title-row"><div><h2>审批流程管理</h2><div class="sub">三级审批：初审（客户经理）→ 复核（风控主管）→ 终审（支行行长）· 待办 '+todo.length+' 笔</div></div></div>'+
+  '<div class="grid2">'+
+    '<div>'+todoHtml+'</div>'+
+    '<div><div class="panel"><div class="panel-h"><h3>审批流水（最近 30 条）</h3></div><div class="panel-b"><div class="tline">'+
+    (done.map(f=>'<div class="tl-item"><div class="dot" style="background:'+(f.act==='拒绝'?'#E74C3C':(f.act==='放款'?'#3498DB':'#1ABB9C'))+'"></div><div class="tm">'+f.time+' · '+f.appId+'</div><b>'+f.node+' · '+f.act+'</b><span style="font-size:12px;color:var(--ink2)">（'+esc(f.op)+'）</span><p>'+esc(f.comment)+'</p></div>').join('')||'<div class="empty">暂无流水</div>')+'</div></div></div></div>'+
+  '</div>';
+}
+function approve(id,pass){
+  const a=appOf(id);const c=cust(a.cid);const rk=riskOf(a.cid);
+  const nodeMap={'待初审':['初审','林晓峰（客户经理）'],'复核中':['复核','黄志明（风控主管）'],'终审中':['终审','陈国平（支行行长）']};
+  const nm=nodeMap[a.status];
+  openModal((pass?'审批通过':'审批驳回')+' · '+id,
+   '<div class="kv"><span class="k">客户 / 金额</span><span class="v">'+esc(custName(a.cid))+' / '+fmt(a.amount)+' 元</span></div>'+
+   '<div class="kv" style="margin-bottom:12px"><span class="k">当前节点</span><span class="v">'+nm[0]+'（'+nm[1]+'）</span></div>'+
+   (pass&&a.status==='终审中'?fInput('apLimit','核定基础额度（元）',suggestLimit(c),true,'number','500'):'')+
+   '<div class="frow"><label>审批意见 <span class="req">*</span></label><textarea id="apComment" rows="3">'+(pass?(rk?'双账核验「'+rk.verdict+'」，Δ='+(rk.delta>0?'+':'')+rk.delta.toFixed(3)+'，同意'+(a.status==='终审中'?'核额放款':'上报下一环节')+'。':'同意上报下一环节。'):'双账核验存在无法解释的缺口，予以驳回。')+'</textarea><div class="err">请填写审批意见</div></div>',
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn '+(pass?'btn-p':'btn-r')+'" onclick="doApprove(\''+id+'\','+pass+')">确认'+(pass?'通过':'驳回')+'</button>');
+}
+function suggestLimit(c){
+  if(!c)return 10000;
+  const s=DB.settings;
+  const y=s.ybase*(0.38+0.40*c.M);
+  let L=c.area*y*s.ppess*s.deltaLoss*s.kappa;
+  if(c.tier===2)L*=1.15;if(c.tier===0)L*=0.8;
+  return Math.round(L/500)*500;
+}
+function doApprove(id,pass){
+  if(!validate(['apComment']))return;
+  const a=appOf(id);const c=cust(a.cid);
+  const nodeMap={'待初审':['初审','林晓峰（客户经理）'],'复核中':['复核','黄志明（风控主管）'],'终审中':['终审','陈国平（支行行长）']};
+  const nm=nodeMap[a.status];
+  const comment=$('apComment').value.trim();
+  const time=today()+' '+new Date().toTimeString().slice(0,5);
+  if(!pass){
+    DB.flows.push({id:DB.seq.fl++,appId:id,node:nm[0],op:nm[1],act:'拒绝',time:time,comment:comment});
+    a.status='已拒绝';a.node=0;
+    toast('申请 '+id+' 已驳回',false);
+  }else if(a.status==='终审中'){
+    const limit=parseInt($('apLimit').value)||suggestLimit(c);
+    DB.flows.push({id:DB.seq.fl++,appId:id,node:'终审',op:nm[1],act:'通过',time:time,comment:comment});
+    DB.flows.push({id:DB.seq.fl++,appId:id,node:'放款',op:'系统',act:'放款',time:time,comment:'额度 '+fmt(limit)+' 元已生效，受托支付通道开启。'});
+    a.status='已放款';a.node=0;
+    const rate=+(DB.settings.lpr+(c.tier===2?0.55:(c.tier===1?1.20:1.70))).toFixed(2);
+    DB.credits.push({id:'CR'+(DB.seq.cr++),cid:a.cid,base:limit,dynAdd:0,total:limit,used:0,rate:rate,grantDate:today(),expireDate:addMonths(today(),a.term),status:'正常',term:a.term});
+    recalcFromSales(a.cid);
+    genRepaySchedule(a.cid);
+    toast('终审通过，额度 '+fmt(limit)+' 元已放款生效');
+  }else{
+    DB.flows.push({id:DB.seq.fl++,appId:id,node:nm[0],op:nm[1],act:'通过',time:time,comment:comment});
+    a.status=a.status==='待初审'?'复核中':'终审中';a.node++;
+    toast(nm[0]+'已通过，流转至'+(a.status==='复核中'?'复核':'终审')+'环节');
+  }
+  saveDB();closeModal();render();
+}
+function genRepaySchedule(cid){
+  const cr=DB.credits.find(x=>x.cid===cid);
+  if(!cr||DB.repays.some(r=>r.creditId===cr.id))return;
+  const used=cr.used||Math.round(cr.total*0.3);
+  if(cr.used===0)cr.used=used;
+  const per=Math.round(used/cr.term),interest=Math.round(used*cr.rate/100/12);
+  for(let m=1;m<=cr.term;m++){
+    DB.repays.push({id:'HK'+(DB.seq.hk++),cid:cid,creditId:cr.id,period:m,dueDate:addMonths(cr.grantDate,m),amount:per+interest,payDate:null,status:'待还款'});
+  }
+}
+
+/* =====================================================================
+   页面：授信额度管理
+   ===================================================================== */
+function pageCredit(){
+  const rows=DB.credits.map(cr=>{
+    const c=cust(cr.cid);
+    return {...cr,cname:c?c.name+'（'+cr.cid+'）':cr.cid,town:c?c.town:'',tier:c?c.tier:1,avail:cr.total-cr.used,usePct:cr.total?Math.round(cr.used/cr.total*100):0};
+  });
+  const body=buildTable('credit',{
+    rows:rows,searchPh:'搜索客户 / 额度编号',
+    searchText:r=>r.id+r.cname+r.status,
+    filters:[
+      {k:'town',label:'乡镇',options:TOWNS.map(t=>({v:t,t:t}))},
+      {k:'status',label:'额度状态',options:['正常','展期中','已冻结'].map(s=>({v:s,t:s}))},
+      {k:'tier',label:'管理档位',options:TIERS.map((t,i)=>({v:i,t:t}))}
+    ],
+    cols:[
+      {k:'id',t:'额度编号',sort:true,render:r=>'<b class="mono">'+r.id+'</b>'},
+      {k:'cname',t:'客户',sort:true},
+      {k:'base',t:'基础额度(元)',sort:true,render:r=>fmt(r.base)},
+      {k:'dynAdd',t:'采期上调(元)',sort:true,render:r=>r.dynAdd?'<b style="color:#12805c">+'+fmt(r.dynAdd)+'</b>':'—'},
+      {k:'total',t:'总额度(元)',sort:true,render:r=>'<b>'+fmt(r.total)+'</b>'},
+      {k:'usePct',t:'使用率',sort:true,render:r=>'<div style="display:flex;align-items:center;gap:8px"><div class="prog" style="width:80px"><i style="width:'+r.usePct+'%;'+(r.usePct>85?'background:#E74C3C':'')+'"></i></div><span>'+r.usePct+'%</span></div>'},
+      {k:'rate',t:'执行利率',sort:true,render:r=>r.rate.toFixed(2)+'%'},
+      {k:'expireDate',t:'到期日',sort:true},
+      {k:'status',t:'状态',sort:true,render:r=>'<span class="tag '+(r.status==='正常'?'tg-green':(r.status==='展期中'?'tg-blue':'tg-red'))+'">'+r.status+'</span>'},
+      {k:'_act',t:'操作',render:r=>'<button class="btn btn-d btn-xs" onclick="editCredit(\''+r.id+'\')">调整</button> <button class="btn btn-d btn-xs" onclick="toggleFreeze(\''+r.id+'\')">'+(r.status==='已冻结'?'解冻':'冻结')+'</button>'}
+    ]
+  });
+  const total=DB.credits.reduce((s,c)=>s+c.total,0),used=DB.credits.reduce((s,c)=>s+c.used,0);
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>授信额度管理</div>'+
+  '<div class="page-title-row"><div><h2>授信额度管理</h2><div class="sub">跟着流水走的活额度 · L<sub>t</sub> = L₀ + α·(R<sub>t</sub>−E[R<sub>t</sub>])⁺ − β·灾损</div></div><button class="btn btn-p" onclick="calcPicker()">额度测算器</button></div>'+
+  '<div class="stat-grid">'+
+    statCard('额度总量',fmtW(total)+'<small> 元</small>','共 '+DB.credits.length+' 户生效额度','up','悲观情景定价 L₀=A·Ŷ·Ppess·δ·κ','s1','M12 2v20M17 6.5c0-2-2.2-3-5-3s-5 1-5 3 2 2.7 5 3.3 5 1.4 5 3.4-2.2 3-5 3-5-1-5-3','#e2f7ef','#12805c')+
+    statCard('已用额度',fmtW(used)+'<small> 元</small>','整体使用率 '+Math.round(used/total*100)+'%','up','受托支付·归行回笼','s2','M4 5h16M4 10h16M4 15h10M4 20h7','#e8f1fb','#2470a8')+
+    statCard('采期自动上调','+'+fmt(DB.credits.reduce((s,c)=>s+c.dynAdd,0))+'<small> 元</small>','流水超预期按 α='+DB.settings.alpha+' 上调','up','卖得越多额度越高','s3','M3 17l6-6 4 4 8-8M15 7h6v6','#fef4e2','#b9770e')+
+    statCard('展期 / 冻结',DB.credits.filter(c=>c.status==='展期中').length+' / '+DB.credits.filter(c=>c.status==='已冻结').length+'<small> 户</small>','灾损自动展期 · 不抽贷不断贷','dn','风险处置留痕可审计','s4','M12 3 2.5 20h19L12 3Zm0 7v4m0 3.5v.5','#f3e9f7','#7d3c98')+
+  '</div>'+
+  '<div class="panel"><div class="panel-b flush">'+body+'</div></div>';
+}
+function editCredit(id){
+  const cr=DB.credits.find(x=>x.id===id);
+  openModal('额度调整 · '+id,
+   '<div class="kv"><span class="k">客户</span><span class="v">'+esc(custName(cr.cid))+'</span></div>'+
+   '<div class="kv"><span class="k">当前总额度 / 已用</span><span class="v">'+fmt(cr.total)+' / '+fmt(cr.used)+' 元</span></div>'+
+   '<div class="kv" style="margin-bottom:12px"><span class="k">执行利率</span><span class="v">'+cr.rate.toFixed(2)+'%（LPR+'+(cr.rate-DB.settings.lpr).toFixed(2)+'pct）</span></div>'+
+   '<div class="f2">'+
+   fInput('crBase','基础额度（元）',cr.base,true,'number','500')+
+   fInput('crDyn','采期上调（元）',cr.dynAdd,false,'number','100')+
+   '</div>'+
+   '<div class="frow"><label>调整事由 <span class="req">*</span></label><textarea id="crReason" rows="2" placeholder="例如：秋茶交售流水超预期，按 α=0.30 上调"></textarea><div class="err">请填写调整事由</div></div>',
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="saveCredit(\''+id+'\')">确认调整</button>');
+}
+function saveCredit(id){
+  if(!validate(['crBase','crReason']))return;
+  const cr=DB.credits.find(x=>x.id===id);
+  const base=parseInt($('crBase').value),dyn=parseInt($('crDyn').value)||0;
+  if(!(base>=0)){fieldErr('crBase','基础额度不能为负');return}
+  const old=cr.total;
+  cr.base=base;cr.dynAdd=dyn;cr.total=base+dyn;
+  if(cr.used>cr.total)cr.used=cr.total;
+  saveDB();closeModal();render();
+  toast('额度已由 '+fmt(old)+' 元调整为 '+fmt(cr.total)+' 元');
+}
+function toggleFreeze(id){
+  const cr=DB.credits.find(x=>x.id===id);
+  const freeze=cr.status!=='已冻结';
+  openConfirm(freeze?'冻结额度':'解冻额度','确认'+(freeze?'冻结':'解冻')+'客户 <b>'+esc(custName(cr.cid))+'</b> 的额度 '+fmt(cr.total)+' 元？'+(freeze?'冻结后该客户不可继续支用。':''),function(){
+    cr.status=freeze?'已冻结':'正常';
+    saveDB();render();toast('额度已'+(freeze?'冻结':'解冻'));
+  });
+}
+
+/* =====================================================================
+   页面：风险评估
+   ===================================================================== */
+function pageRisk(){
+  const rows=DB.risks.map(r=>({...r,cname:custName(r.cid),ad:Math.abs(r.delta)}));
+  const body=buildTable('risk',{
+    rows:rows,searchPh:'搜索客户 / 评估编号',
+    searchText:r=>r.id+r.cname+r.verdict,
+    filters:[
+      {k:'level',label:'风险等级',options:['低','中','高'].map(s=>({v:s,t:s}))},
+      {k:'verdict',label:'判定结论',options:['一致—正常','关注—待核','异常—实核','异常—拦截','待台账积累'].map(s=>({v:s,t:s}))}
+    ],
+    cols:[
+      {k:'id',t:'评估编号',sort:true,render:r=>'<b class="mono">'+r.id+'</b>'},
+      {k:'cname',t:'客户',sort:true},
+      {k:'rhat',t:'物理账 R̂(元)',sort:true,render:r=>fmt(r.rhat)},
+      {k:'ract',t:'经济账(元)',sort:true,render:r=>r.ract?fmt(r.ract):'—'},
+      {k:'delta',t:'Δ 偏差',sort:true,sortVal:r=>r.ad,render:r=>'<b style="color:'+(r.level==='低'?'#12805c':(r.level==='中'?'#b9770e':'#c0392b'))+'">'+(r.delta>0?'+':'')+r.delta.toFixed(3)+'</b>'},
+      {k:'level',t:'风险等级',sort:true,render:r=>'<span class="tag '+(r.level==='低'?'tg-green':(r.level==='中'?'tg-orange':'tg-red'))+'">'+r.level+'风险</span>'},
+      {k:'verdict',t:'判定结论',render:r=>r.verdict},
+      {k:'date',t:'评估日期',sort:true},
+      {k:'_act',t:'操作',render:r=>'<button class="btn btn-d btn-xs" onclick="viewRisk(\''+r.cid+'\')">证据链</button> <button class="btn btn-d btn-xs" onclick="reassess(\''+r.cid+'\')">重新评估</button>'}
+    ]
+  });
+  const dist=[['低','#1ABB9C'],['中','#F39C12'],['高','#E74C3C']].map(x=>({label:x[0]+'风险',value:DB.risks.filter(r=>r.level===x[0]).length,color:x[1]}));
+  const points=DB.risks.filter(r=>r.ract>0).map(r=>({x:r.rhat,y:r.ract,cid:r.cid,color:r.level==='低'?'#1ABB9C':(r.level==='中'?'#F39C12':'#E74C3C'),label:custName(r.cid)}));
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>风险评估</div>'+
+  '<div class="page-title-row"><div><h2>风险评估</h2><div class="sub">"天眼"物理账 × "地账"经济账 双核核验 · Δ = (R<sub>actual</sub> − R̂) / R̂ · θ2='+DB.settings.th2+' / θ3='+DB.settings.th3+'</div></div></div>'+
+  '<div class="grid2">'+
+    '<div class="panel"><div class="panel-h"><h3>风险等级分布</h3></div><div class="panel-b" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">'+
+    chartDonut(dist,DB.risks.length,'评估户数')+
+    '<div style="flex:1;min-width:160px">'+dist.map(d=>'<div class="kv"><span class="k"><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:'+d.color+';margin-right:6px"></i>'+d.label+'</span><span class="v">'+d.value+' 户（'+Math.round(d.value/DB.risks.length*100)+'%）</span></div>').join('')+
+    '<div class="note" style="margin-top:10px">高风险户自动列入拦截与复核名单；中风险户转二级多源交叉比对。</div></div></div></div>'+
+    '<div class="panel"><div class="panel-h"><h3>双账比对散点</h3><span class="sub">容差带 ±θ2 · 虚线 ±θ3</span></div><div class="panel-b">'+chartScatter(points,600,330)+'</div></div>'+
+  '</div>'+
+  '<div class="panel"><div class="panel-h"><h3>评估台账</h3></div><div class="panel-b flush">'+body+'</div></div>';
+}
+function viewRisk(cid){
+  const c=cust(cid),rk=riskOf(cid);if(!c||!rk)return;
+  const cr=creditOf(cid);
+  const warns=DB.warns.filter(w=>w.cid===cid);
+  openDrawer('风险评估证据链 · '+cid,esc(c.name)+' · '+c.town+c.village,
+  '<div class="panel"><div class="panel-h"><h3>天眼核验（物理账）</h3></div><div class="panel-b">'+
+    chartNDVI(c,600,180)+
+    kv('采摘轮次 n / 管理强度 M',c.rounds+' 轮 / '+c.M.toFixed(2))+
+    kv('管理档位','<span class="tag '+(c.tier===2?'tg-green':(c.tier===1?'tg-orange':'tg-red'))+'">'+TIERS[c.tier]+'</span>')+
+    kv('推算收益 R̂ = A·Ŷ·P̂',fmt(rk.rhat)+' 元')+
+  '</div></div>'+
+  '<div class="panel"><div class="panel-h"><h3>地账核验（经济账）</h3></div><div class="panel-b">'+
+    kv('收购磅秤实测收益',rk.ract?fmt(rk.ract)+' 元':'台账积累中')+kv('台账笔数',salesOf(cid).length+' 笔')+
+    kv('一致性偏差 Δ','<b style="color:'+(rk.level==='低'?'#12805c':(rk.level==='中'?'#b9770e':'#c0392b'))+'">'+(rk.delta>0?'+':'')+rk.delta.toFixed(3)+'</b>')+
+    kv('判定结论','<span class="tag '+(rk.level==='低'?'tg-green':(rk.level==='中'?'tg-orange':'tg-red'))+'">'+rk.verdict+'</span>')+
+    (rk.level!=='低'?'<div class="note red" style="margin-top:8px">'+(rk.delta>0?'经济账显著大于物理账：推算产能不足以支撑台账流水，提示代刷流水或替他人代卖，需核查一地多押与集中交售时段。':'物理账显著大于经济账：提示瞒报销售或鲜叶流入未联网流动茶贩，需调取农资购买与采工工资佐证。')+'</div>':'')+
+  '</div></div>'+
+  (cr?'<div class="panel"><div class="panel-h"><h3>授信联动</h3></div><div class="panel-b">'+
+    kv('当前额度',fmt(cr.total)+' 元（已用 '+fmt(cr.used)+' 元）')+kv('执行利率',cr.rate.toFixed(2)+'%')+
+    kv('处置建议',rk.level==='高'?'<span class="tag tg-red">建议冻结并移交人工核查</span>':(rk.level==='中'?'<span class="tag tg-orange">维持额度，加强贷后监测</span>':'<span class="tag tg-green">正常</span>'))+
+  '</div></div>':'')+
+  (warns.length?'<div class="panel"><div class="panel-h"><h3>关联预警（'+warns.length+'）</h3></div><div class="panel-b">'+warns.map(w=>'<div class="kv"><span class="k">'+w.date+' · '+esc(w.type)+'</span><span class="v">'+(w.st==='已办结'?'<span class="tag tg-green">已办结</span>':'<span class="tag tg-orange">'+esc(w.st)+'</span>')+'</span></div>').join('')+'</div></div>':''));
+}
+function reassess(cid){
+  const rk=riskOf(cid);const c=cust(cid);
+  const rnd=mulberry32((Date.now()%100000)+cid.length);
+  rk.rhat=Math.round(c.area*DB.settings.ybase*(0.38+0.40*c.M)*105.6*(0.80+0.34*c.M));
+  const saleSum=salesOf(cid).reduce((s,x)=>s+x.amount,0);
+  rk.ract=saleSum||Math.round(rk.rhat*(1+(rnd()-0.5)*0.36));
+  rk.delta=rk.rhat>0?+((rk.ract-rk.rhat)/rk.rhat).toFixed(3):0;
+  const ad=Math.abs(rk.delta);
+  rk.level=cid==='AX-XP-0088'?'高':(ad>DB.settings.th3?'高':(ad>DB.settings.th2?'中':'低'));
+  rk.verdict=cid==='AX-XP-0088'?'异常—拦截':(ad<=DB.settings.th2?'一致—正常':(ad<=DB.settings.th3?'关注—待核':'异常—实核'));
+  rk.date=today();
+  saveDB();render();toast('已完成 '+custName(cid)+' 的双账重新核验，判定「'+rk.verdict+'」');
+}
+
+/* =====================================================================
+   页面：风险预警中心
+   ===================================================================== */
+function pageWarn(){
+  const lv={'高':'tg-red','中':'tg-orange','低':'tg-blue'};
+  const rows=DB.warns.map(w=>({...w,cname:custName(w.cid)}));
+  const body=buildTable('warn',{
+    rows:rows,searchPh:'搜索农户 / 类型',
+    searchText:r=>r.cname+r.type+r.src+r.act,
+    filters:[
+      {k:'level',label:'等级',options:['高','中','低'].map(t=>({v:t,t:t}))},
+      {k:'st',label:'状态',options:['待处置','处置中','已办结'].map(t=>({v:t,t:t}))},
+      {k:'type',label:'类型',options:WARN_TYPES.map(t=>({v:t,t:t}))}
+    ],
+    cols:[
+      {k:'id',t:'预警编号',sort:true,render:r=>'<b class="mono">'+r.id+'</b>'},
+      {k:'cname',t:'农户',sort:true},
+      {k:'type',t:'预警类型',render:r=>esc(r.type)},
+      {k:'level',t:'等级',sort:true,sortVal:r=>({'高':3,'中':2,'低':1}[r.level]),render:r=>'<span class="tag '+lv[r.level]+'">'+r.level+'风险</span>'},
+      {k:'src',t:'来源'},
+      {k:'date',t:'日期',sort:true},
+      {k:'act',t:'处置意见',render:r=>'<span style="white-space:normal;display:inline-block;max-width:280px">'+esc(r.act)+'</span>'},
+      {k:'st',t:'状态',sort:true,render:r=>'<span class="tag '+(r.st==='已办结'?'tg-green':(r.st==='处置中'?'tg-orange':'tg-red'))+'">'+r.st+'</span>'},
+      {k:'_act',t:'操作',render:r=>(r.st!=='已办结'?'<button class="btn btn-p btn-xs" onclick="warnHandle(\''+r.id+'\')">'+(r.st==='待处置'?'开始处置':'办结')+'</button> ':'')+'<button class="btn btn-r btn-xs" onclick="delRow(\'warns\',\''+r.id+'\')">删除</button>'}
+    ]
+  });
+  const open=DB.warns.filter(w=>w.st!=='已办结').length;
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>风险预警中心</div>'+
+  '<div class="page-title-row"><div><h2>风险预警中心</h2><div class="sub">贷后跟踪 · 三级塔式核查产物 · 灾损即赔联动</div></div><button class="btn btn-p" onclick="editWarn(\'\')">＋ 手工登记预警</button></div>'+
+  '<div class="stat-grid">'+
+    statCard('预警总数',DB.warns.length+'<small> 项</small>','筛查 / 比对 / 复核 / 气象联动','up','全量留痕可审计','s1','M12 3 2.5 20h19L12 3Zm0 7v4m0 3.5v.5','#e2f7ef','#12805c')+
+    statCard('待处置',open+'<small> 项</small>','高风险 '+DB.warns.filter(w=>w.level==='高'&&w.st!=='已办结').length+' 项优先','dn','按等级排序处置','s5','M18 8a6 6 0 0 0-12 0c0 7-3 8-3 8h18s-3-1-3-8M10.3 21a2 2 0 0 0 3.4 0','#fdeceb','#c0392b')+
+    statCard('灾损即赔',DB.warns.filter(w=>w.type==='灾损预警').length+'<small> 笔</small>','自动展期 + 指数险理赔','up','灾年不抽贷不断贷','s2','M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3Z','#e8f1fb','#2470a8')+
+    statCard('不良率对照','3.5<small> %</small>','引入双账核验前 10.0%','up','核准率保持 96%','s3','m4.5 12.5 5 5 10-11','#fef4e2','#b9770e')+
+  '</div>'+
+  '<div class="panel"><div class="panel-h"><h3>预警队列</h3><span class="sub">待处置优先 · 高等级优先</span></div><div class="panel-b flush">'+body+'</div></div>'+
+  '<div class="grid2">'+
+  '<div class="panel"><div class="panel-h"><h3>应急处理三道防线</h3></div><div class="panel-b"><div class="tline">'+
+    '<div class="tl-item"><div class="dot"></div><b>数据异常</b><p>如台账批量缺失，系统自动熔断并回退至上一核验口径</p></div>'+
+    '<div class="tl-item"><div class="dot" style="background:#3498DB"></div><b>模型异常</b><p>如灾年批量误判，触发人工复核队列扩容</p></div>'+
+    '<div class="tl-item"><div class="dot" style="background:#E74C3C"></div><b>舆情与合规事件</b><p>触发 24 小时响应小组，所有应急动作留痕可审计</p></div>'+
+  '</div></div></div>'+
+  '<div class="panel"><div class="panel-h"><h3>灾损即赔机制</h3></div><div class="panel-b"><div class="note green">寒潮或干旱后冠层指数骤降可作为减产客观证据：遥感与气象联合判定灾损后，按 β 系数启动<b>自动展期</b>并触发<b>气象指数保险理赔</b>，而非抽贷断贷。</div>'+
+  '<div class="note" style="margin-top:10px">2026-03-14 · AX-XH-0019 郑国明：倒春寒致冠层指数骤降 31%，贷款自动展期 6 个月，指数险理赔 8,600 元 T+3 日到账。</div></div></div>'+
+  '</div>';
+}
+function warnHandle(id){
+  const w=DB.warns.find(x=>x.id===id);
+  if(w.st==='待处置'){
+    openModal('开始处置 · '+id,
+      '<div class="kv"><span class="k">农户 / 类型</span><span class="v">'+esc(custName(w.cid))+' · '+esc(w.type)+'</span></div>'+
+      '<div class="frow" style="margin-top:10px"><label>处置意见 <span class="req">*</span></label><textarea id="whAct" rows="3">'+esc(w.act)+'</textarea><div class="err">请填写处置意见</div></div>',
+      '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-w" onclick="doWarnHandle(\''+id+'\',false)">标记处置中</button><button class="btn btn-p" onclick="doWarnHandle(\''+id+'\',true)">直接办结</button>');
+  }else{
+    openConfirm('办结预警','确认将预警 <b>'+id+'（'+esc(w.type)+'）</b>标记为已办结？',function(){
+      w.st='已办结';saveDB();render();toast('预警 '+id+' 已办结');
+    });
+  }
+}
+function doWarnHandle(id,finish){
+  if(!validate(['whAct']))return;
+  const w=DB.warns.find(x=>x.id===id);
+  w.act=$('whAct').value.trim();
+  w.st=finish?'已办结':'处置中';
+  saveDB();closeModal();render();
+  toast('预警 '+id+(finish?' 已办结':' 转入处置中'));
+}
+function editWarn(id){
+  const w=id?DB.warns.find(x=>x.id===id):null;
+  const opts=DB.customers.map(c=>'<option value="'+c.id+'"'+(w&&w.cid===c.id?' selected':'')+'>'+c.name+'（'+c.id+'）</option>').join('');
+  openModal((w?'编辑预警 '+w.id:'手工登记预警'),
+   '<div class="frow"><label>农户 <span class="req">*</span></label><select id="wnCust">'+opts+'</select><div class="err">请选择农户</div></div>'+
+   '<div class="f2">'+fSelect('wnType','预警类型',WARN_TYPES,w?w.type:'',true)+fSelect('wnLevel','风险等级',['高','中','低'],w?w.level:'中',true)+'</div>'+
+   '<div class="f2">'+fSelect('wnSrc','预警来源',WARN_SRC,w?w.src:'人工登记',true)+fInput('wnDate','日期',w?w.date:today(),true,'date')+'</div>'+
+   '<div class="frow"><label>处置意见 <span class="req">*</span></label><textarea id="wnAct" rows="2">'+(w?esc(w.act):'')+'</textarea><div class="err">请填写处置意见</div></div>',
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="saveWarn(\''+id+'\')">保存</button>');
+}
+function saveWarn(id){
+  if(!validate(['wnDate','wnAct']))return;
+  const obj={cid:$('wnCust').value,type:$('wnType').value,level:$('wnLevel').value,src:$('wnSrc').value,date:$('wnDate').value,act:$('wnAct').value};
+  if(id){Object.assign(DB.warns.find(x=>x.id===id),obj);toast('预警已更新')}
+  else{DB.warns.push({id:'YJ'+(DB.seq.yj++),st:'待处置',...obj});toast('预警已登记，进入待处置队列')}
+  saveDB();closeModal();render();
+}
+
+/* =====================================================================
+   页面：还款记录
+   ===================================================================== */
+function pageRepay(){
+  const rows=DB.repays.map(r=>({...r,cname:custName(r.cid)}));
+  const body=buildTable('repay',{
+    rows:rows,searchPh:'搜索客户 / 还款编号',
+    searchText:r=>r.id+r.cname+r.status+r.creditId,
+    filters:[{k:'status',label:'状态',options:['已还清','待还款','逾期'].map(s=>({v:s,t:s}))}],
+    cols:[
+      {k:'id',t:'还款编号',sort:true,render:r=>'<b class="mono">'+r.id+'</b>'},
+      {k:'cname',t:'客户',sort:true},
+      {k:'creditId',t:'额度编号'},
+      {k:'period',t:'期次',sort:true,render:r=>'第 '+r.period+' 期'},
+      {k:'dueDate',t:'应还日期',sort:true},
+      {k:'amount',t:'应还金额(元)',sort:true,render:r=>'<b>'+fmt(r.amount)+'</b>'},
+      {k:'payDate',t:'实还日期',sort:true,render:r=>r.payDate||'—'},
+      {k:'status',t:'状态',sort:true,render:r=>'<span class="tag '+(r.status==='已还清'?'tg-green':(r.status==='逾期'?'tg-red':'tg-orange'))+'">'+r.status+'</span>'},
+      {k:'_act',t:'操作',render:r=>(r.status!=='已还清'?'<button class="btn btn-p btn-xs" onclick="doRepay(\''+r.id+'\')">登记还款</button> ':'')+'<button class="btn btn-r btn-xs" onclick="delRepay(\''+r.id+'\')">删除</button>'}
+    ]
+  });
+  const sum=st=>DB.repays.filter(r=>r.status===st).reduce((s,r)=>s+r.amount,0);
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>还款记录</div>'+
+  '<div class="page-title-row"><div><h2>还款记录</h2><div class="sub">收购款归行自动回笼 · 受托支付闭环还款</div></div><button class="btn btn-p" onclick="addRepay()">＋ 手工登记</button></div>'+
+  '<div class="stat-grid g3">'+
+    statCard('已还清金额',fmtW(sum('已还清'))+'<small> 元</small>',DB.repays.filter(r=>r.status==='已还清').length+' 期已结清','up','归行回笼自动扣划','s1','m4.5 12.5 5 5 10-11','#e2f7ef','#12805c')+
+    statCard('待还款金额',fmtW(sum('待还款'))+'<small> 元</small>',DB.repays.filter(r=>r.status==='待还款').length+' 期未到期','up','秋茶交售后集中回笼','s2','M12 8v5m0 3.5v.5M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z','#e8f1fb','#2470a8')+
+    statCard('逾期金额',fmtW(sum('逾期'))+'<small> 元</small>',DB.repays.filter(r=>r.status==='逾期').length+' 期逾期','dn','已推送客户经理催收','s3','M12 3 2.5 20h19L12 3Zm0 7v4m0 3.5v.5','#fef4e2','#b9770e')+
+  '</div>'+
+  '<div class="panel"><div class="panel-b flush">'+body+'</div></div>';
+}
+function doRepay(id){
+  const r=DB.repays.find(x=>x.id===id);
+  openModal('登记还款 · '+id,
+   '<div class="kv"><span class="k">客户 / 期次</span><span class="v">'+esc(custName(r.cid))+' · 第 '+r.period+' 期</span></div>'+
+   '<div class="kv" style="margin-bottom:12px"><span class="k">应还金额</span><span class="v">'+fmt(r.amount)+' 元（应还日 '+r.dueDate+'）</span></div>'+
+   fInput('rpAmount','实还金额（元）',r.amount,true,'number','1')+
+   fInput('rpDate','还款日期',today(),true,'date'),
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="saveRepay(\''+id+'\')">确认登记</button>');
+}
+function saveRepay(id){
+  if(!validate(['rpAmount','rpDate']))return;
+  const r=DB.repays.find(x=>x.id===id);
+  const amt=parseInt($('rpAmount').value);
+  if(!(amt>0)){fieldErr('rpAmount','金额必须大于 0');return}
+  const wasOverdue=r.status==='逾期';
+  r.amount=amt;r.payDate=$('rpDate').value;r.status='已还清';
+  const cr=DB.credits.find(x=>x.id===r.creditId);
+  if(cr)cr.used=Math.max(0,cr.used-Math.round(amt*0.85));
+  if(wasOverdue){
+    const w=DB.warns.find(x=>x.cid===r.cid&&x.type==='还款逾期'&&x.st!=='已办结');
+    if(w){w.st='已办结';w.act='逾期款项已收回，台账销号'}
+  }
+  saveDB();closeModal();render();toast('还款 '+fmt(amt)+' 元已登记，额度同步释放');
+}
+function addRepay(){
+  const opts=DB.credits.map(cr=>'<option value="'+cr.id+'">'+esc(custName(cr.cid))+' · '+cr.id+'</option>').join('');
+  openModal('手工登记还款',
+   '<div class="frow"><label>授信额度 <span class="req">*</span></label><select id="nrCredit">'+opts+'</select><div class="err">请选择额度</div></div>'+
+   '<div class="f2">'+fInput('nrPeriod','期次',1,true,'number')+fInput('nrDue','应还日期',addMonths(today(),1),true,'date')+'</div>'+
+   fInput('nrAmount','应还金额（元）','',true,'number','1'),
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="saveNewRepay()">保存</button>');
+}
+function saveNewRepay(){
+  if(!validate(['nrPeriod','nrAmount']))return;
+  const cr=DB.credits.find(x=>x.id===$('nrCredit').value);
+  DB.repays.push({id:'HK'+(DB.seq.hk++),cid:cr.cid,creditId:cr.id,period:+$('nrPeriod').value,dueDate:$('nrDue').value,amount:parseInt($('nrAmount').value),payDate:null,status:'待还款'});
+  saveDB();closeModal();render();toast('还款计划已登记');
+}
+function delRepay(id){
+  openConfirm('删除还款记录','确认删除还款记录 <b>'+id+'</b>？',function(){
+    DB.repays=DB.repays.filter(r=>r.id!==id);
+    saveDB();render();toast('记录已删除');
+  });
+}
+
+/* =====================================================================
+   页面：统计报表
+   ===================================================================== */
+function pageReport(){
+  const credits=DB.credits;
+  const townRows=TOWNS.map(t=>{
+    const cs=credits.filter(c=>cust(c.cid).town===t);
+    const total=cs.reduce((s,c)=>s+c.total,0),used=cs.reduce((s,c)=>s+c.used,0);
+    return {town:t,n:cs.length,total:total,used:used,pct:total?Math.round(used/total*100):0,
+      rate:cs.length?+(cs.reduce((s,c)=>s+c.rate,0)/cs.length).toFixed(2):0};
+  });
+  const top10=[...credits].sort((a,b)=>b.total-a.total).slice(0,10).map(c=>({label:cust(c.cid).name,value:c.total,color:'#1ABB9C'}));
+  const repDist=[['已还清','#1ABB9C'],['待还款','#3498DB'],['逾期','#E74C3C']].map(x=>({label:x[0],value:DB.repays.filter(r=>r.status===x[0]).length,color:x[1]}));
+  const months=[],mGrant=[],mRepay=[],mSale=[];
+  for(let i=7;i>=0;i--){const d=addMonths('2026-10-01',-i),mk=d.slice(0,7);months.push(mk.replace('-','/'));
+    mGrant.push(credits.filter(c=>c.grantDate.slice(0,7)===mk).reduce((s,c)=>s+c.base,0));
+    mRepay.push(DB.repays.filter(r=>r.payDate&&r.payDate.slice(0,7)===mk).reduce((s,r)=>s+r.amount,0));
+    mSale.push(DB.sales.filter(s=>s.date.slice(0,7)===mk).reduce((s,x)=>s+x.amount,0));
+  }
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>统计报表<span class="right"><button class="btn btn-d btn-xs" onclick="exportCSV()">导出 CSV</button></span></div>'+
+  '<div class="page-title-row"><div><h2>统计报表</h2><div class="sub">经营分析与监管报送口径 · 数据截至 '+today()+'</div></div></div>'+
+  '<div class="grid2">'+
+    '<div class="panel"><div class="panel-h"><h3>月度投放 / 回笼 / 交售</h3><span class="sub">近 8 个月（元）</span></div><div class="panel-b">'+
+    chartLine([{name:'新增授信',color:'#1ABB9C',data:mGrant},{name:'还款回笼',color:'#3498DB',data:mRepay},{name:'交售流水',color:'#F39C12',data:mSale}],months)+
+    '<div class="legend"><span><i style="background:#1ABB9C"></i>新增授信</span><span><i style="background:#3498DB"></i>还款回笼</span><span><i style="background:#F39C12"></i>交售流水</span></div></div></div>'+
+    '<div class="panel"><div class="panel-h"><h3>还款状态分布</h3></div><div class="panel-b" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">'+
+    chartDonut(repDist,DB.repays.length,'总期数')+
+    '<div style="flex:1;min-width:150px">'+repDist.map(d=>'<div class="kv"><span class="k"><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:'+d.color+';margin-right:6px"></i>'+d.label+'</span><span class="v">'+d.value+' 期</span></div>').join('')+'</div></div></div>'+
+  '</div>'+
+  '<div class="panel"><div class="panel-h"><h3>客户额度排行 TOP10</h3></div><div class="panel-b">'+chartBars(top10)+'</div></div>'+
+  '<div class="panel"><div class="panel-h"><h3>分乡镇经营汇总</h3></div><div class="panel-b flush"><div style="overflow-x:auto"><table class="gt"><thead><tr><th>乡镇</th><th>授信户数</th><th>额度总量(元)</th><th>已用额度(元)</th><th>使用率</th><th>平均利率</th></tr></thead><tbody>'+
+  townRows.map(r=>'<tr><td><b>'+r.town+'</b></td><td>'+r.n+'</td><td>'+fmt(r.total)+'</td><td>'+fmt(r.used)+'</td><td><div style="display:flex;align-items:center;gap:8px"><div class="prog" style="width:90px"><i style="width:'+r.pct+'%"></i></div>'+r.pct+'%</div></td><td>'+r.rate.toFixed(2)+'%</td></tr>').join('')+
+  '</tbody></table></div></div></div>';
+}
+function exportCSV(){
+  const lines=['客户编号,户主,乡镇,村,合作社,面积(亩),管理档位,基础额度(元),动态上调(元),总额度(元),已用(元),执行利率(%),状态'];
+  DB.credits.forEach(cr=>{const c=cust(cr.cid);lines.push([cr.cid,c.name,c.town,c.village,c.coop,c.area,TIERS[c.tier],cr.base,cr.dynAdd,cr.total,cr.used,cr.rate,cr.status].join(','))});
+  const blob=new Blob(['﻿'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='e叶知秋授信台账_'+today()+'.csv';a.click();
+  toast('CSV 报表已导出');
+}
+
+/* =====================================================================
+   页面：用户与权限管理
+   ===================================================================== */
+const ROLE_CLS={'系统管理员':'tg-purple','客户经理':'tg-blue','风控主管':'tg-orange','支行行长':'tg-red','合作社操作员':'tg-green'};
+function pageUsers(){
+  const rows=DB.users.map(u=>({...u}));
+  const body=buildTable('users',{
+    rows:rows,searchPh:'搜索账号 / 姓名 / 角色',
+    searchText:r=>r.u+r.name+r.role+r.org,
+    filters:[{k:'role',label:'角色',options:ROLES.map(t=>({v:t,t:t}))},{k:'status',label:'状态',options:['启用','停用'].map(t=>({v:t,t:t}))}],
+    cols:[
+      {k:'u',t:'账号',sort:true,render:r=>'<b class="mono">'+r.u+'</b>'},
+      {k:'name',t:'姓名 / 机构',render:r=>'<b>'+esc(r.name)+'</b><br><span style="font-size:11px;color:var(--ink2)">'+esc(r.org)+'</span>'},
+      {k:'role',t:'角色',sort:true,render:r=>'<span class="tag '+ROLE_CLS[r.role]+'">'+r.role+'</span>'},
+      {k:'phone',t:'联系电话'},
+      {k:'last',t:'最近登录',sort:true,render:r=>'<span style="font-size:12px">'+r.last+'</span>'},
+      {k:'status',t:'状态',render:r=>'<span class="tag '+(r.status==='启用'?'tg-green':'tg-gray')+'">'+r.status+'</span>'},
+      {k:'_act',t:'操作',render:r=>'<button class="btn btn-d btn-xs" onclick="editUser(\''+r.u+'\')">编辑</button> <button class="btn btn-d btn-xs" onclick="resetPwd(\''+r.u+'\')">重置密码</button> '+(r.u!=='admin'?'<button class="btn btn-r btn-xs" onclick="delUser(\''+r.u+'\')">删除</button>':'')}
+    ]
+  });
+  const pages=MENUS.filter(m=>!m.sec).map(m=>({id:m.id,name:m.name}));
+  const editRoles=ROLES.filter(r=>r!=='系统管理员');
+  const matrix='<div style="overflow-x:auto"><table class="gt perm-grid"><thead><tr><th>功能模块</th>'+editRoles.map(r=>'<th>'+r+'</th>').join('')+'</tr></thead><tbody>'+
+    pages.map(p=>'<tr><td>'+p.name+'</td>'+editRoles.map(r=>{
+      const on=(DB.perms[r]||[]).includes(p.id);
+      return '<td><input type="checkbox" '+(on?'checked':'')+' onchange="togglePerm(\''+r+'\',\''+p.id+'\',this.checked)" style="width:16px;height:16px;cursor:pointer"></td>';
+    }).join('')+'</tr>').join('')+'</tbody></table></div>';
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>用户与权限管理</div>'+
+  '<div class="page-title-row"><div><h2>用户与权限管理</h2><div class="sub">账户体系 · 角色权限矩阵 · 系统管理员拥有全部权限</div></div><button class="btn btn-p" onclick="editUser(\'\')">＋ 新增用户</button></div>'+
+  '<div class="panel"><div class="panel-h"><h3>用户账户</h3></div><div class="panel-b flush">'+body+'</div></div>'+
+  '<div class="panel"><div class="panel-h"><h3>角色权限矩阵</h3><span class="sub">勾选即时生效：控制各角色可见的菜单与页面</span></div><div class="panel-b flush">'+matrix+'</div></div>';
+}
+function togglePerm(role,pageId,on){
+  if(!DB.perms[role])DB.perms[role]=[];
+  if(on&&!DB.perms[role].includes(pageId))DB.perms[role].push(pageId);
+  if(!on)DB.perms[role]=DB.perms[role].filter(p=>p!==pageId);
+  saveDB();toast('已更新「'+role+'」对「'+MENUS.find(m=>m.id===pageId).name+'」的访问权限');
+}
+function editUser(u){
+  const user=u?DB.users.find(x=>x.u===u):null;
+  openModal((user?'编辑用户 · '+user.u:'新增用户'),
+   '<div class="f2">'+
+   '<div class="frow" id="row_usU"><label>登录账号 <span class="req">*</span></label><input id="usU" value="'+(user?user.u:'')+'" '+(user?'readonly style="background:#f0f4f2"':'')+'><div class="err">请输入账号</div></div>'+
+   fInput('usName','姓名 / 机构简称',user?user.name:'',true)+
+   '</div><div class="f2">'+
+   fSelect('usRole','角色',ROLES,user?user.role:'客户经理',true)+
+   fInput('usPhone','联系电话',user?user.phone:'',true)+
+   '</div>'+
+   fInput('usOrg','所属机构',user?user.org:'合作银行A支行',true)+
+   (user?'':fInput('usPwd','初始密码','123456',true))+
+   (user?fSelect('usStatus','账户状态',['启用','停用'],user.status,true):''),
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="saveUser(\''+u+'\')">保存</button>');
+}
+function saveUser(u){
+  if(u){
+    if(!validate(['usName','usPhone','usOrg']))return;
+    const user=DB.users.find(x=>x.u===u);
+    Object.assign(user,{name:$('usName').value,role:$('usRole').value,phone:$('usPhone').value,org:$('usOrg').value,status:$('usStatus').value});
+    toast('用户 '+u+' 已更新');
+  }else{
+    if(!validate(['usU','usName','usPhone','usOrg','usPwd']))return;
+    const nu=$('usU').value.trim();
+    if(DB.users.some(x=>x.u===nu)){fieldErr('usU','账号已存在');return}
+    DB.users.push({u:nu,pwd:$('usPwd').value,name:$('usName').value,role:$('usRole').value,phone:$('usPhone').value,org:$('usOrg').value,status:'启用',last:'—'});
+    toast('用户 '+nu+' 已创建');
+  }
+  saveDB();closeModal();render();
+}
+function resetPwd(u){
+  openConfirm('重置密码','确认将用户 <b>'+u+'</b> 的密码重置为 123456？',function(){
+    DB.users.find(x=>x.u===u).pwd='123456';
+    saveDB();toast('密码已重置为 123456');
+  });
+}
+function delUser(u){
+  openConfirm('删除用户','确认删除用户 <b>'+u+'</b>？删除后该账号将无法登录。',function(){
+    DB.users=DB.users.filter(x=>x.u!==u);
+    saveDB();render();toast('用户已删除');
+  });
+}
+
+/* =====================================================================
+   页面：系统设置
+   ===================================================================== */
+function pageSetting(){
+  const s=DB.settings;
+  return '<div class="crumb"><b>首页</b><span class="sep">/</span>系统设置</div>'+
+  '<div class="page-title-row"><div><h2>系统设置</h2><div class="sub">模型参数 · 机构信息 · 数据管理</div></div></div>'+
+  '<div class="grid2">'+
+  '<div class="panel"><div class="panel-h"><h3>授信模型参数</h3><span class="sub">调整后实时作用于新核定额度与风险判定</span></div><div class="panel-b">'+
+    '<div class="f2">'+fInput('stLpr','LPR 基准利率（%）',s.lpr,true,'number','0.01')+fInput('stAlpha','流水调额系数 α',s.alpha,true,'number','0.01')+'</div>'+
+    '<div class="f2">'+fInput('stTh2','二级触发阈值 θ2',s.th2,true,'number','0.01')+fInput('stTh3','三级触发阈值 θ3',s.th3,true,'number','0.01')+'</div>'+
+    '<div class="f2">'+fInput('stKappa','授信折扣率 κ',s.kappa,true,'number','0.01')+fInput('stDelta','采运折损系数 δ',s.deltaLoss,true,'number','0.01')+'</div>'+
+    '<div class="f2">'+fInput('stPpess','悲观情景价格（元/kg）',s.ppess,true,'number','0.5')+fInput('stYbase','产区基准单产（kg/亩）',s.ybase,true,'number','0.5')+'</div>'+
+    '<button class="btn btn-p" onclick="saveSetting()">保存参数</button>'+
+  '</div></div>'+
+  '<div>'+
+  '<div class="panel"><div class="panel-h"><h3>机构与账户</h3></div><div class="panel-b">'+
+    kv('经办机构',esc(s.org))+kv('服务区域',esc(s.region))+kv('当前账户',esc(CUR.name)+'（'+CUR.role+'）')+
+    '<div class="frow" style="margin-top:12px"><label>修改本人登录密码</label><input id="stPwd" type="password" placeholder="输入新密码（留空则不修改）"></div>'+
+    '<button class="btn btn-d" onclick="savePwd()">修改密码</button>'+
+  '</div></div>'+
+  '<div class="panel"><div class="panel-h"><h3>数据管理</h3></div><div class="panel-b">'+
+    kv('客户档案 / 地块',DB.customers.length+' 户 / '+DB.plots.length+' 块')+
+    kv('交售台账 / 影像',DB.sales.length+' 笔 / '+DB.images.length+' 景')+
+    kv('授信申请 / 额度',DB.apps.length+' 笔 / '+DB.credits.length+' 户')+
+    kv('还款记录 / 预警',DB.repays.length+' 期 / '+DB.warns.length+' 项')+
+    '<div class="note" style="margin:12px 0">全部业务数据保存在本机浏览器（localStorage），恢复出厂数据将清除所有改动。</div>'+
+    '<button class="btn btn-r" onclick="resetAll()">恢复出厂数据</button>'+
+  '</div></div>'+
+  '</div></div>';
+}
+function saveSetting(){
+  if(!validate(['stLpr','stAlpha','stTh2','stTh3','stKappa','stDelta','stPpess','stYbase']))return;
+  const s=DB.settings;
+  s.lpr=+$('stLpr').value;s.alpha=+$('stAlpha').value;s.th2=+$('stTh2').value;s.th3=+$('stTh3').value;
+  s.kappa=+$('stKappa').value;s.deltaLoss=+$('stDelta').value;s.ppess=+$('stPpess').value;s.ybase=+$('stYbase').value;
+  saveDB();toast('模型参数已保存并即时生效');
+}
+function savePwd(){
+  const v=$('stPwd').value.trim();
+  if(!v){toast('请输入新密码',false);return}
+  if(v.length<6){toast('密码长度至少 6 位',false);return}
+  const user=DB.users.find(x=>x.u===CUR.u);
+  if(user){user.pwd=v;saveDB();$('stPwd').value='';toast('密码已修改，下次登录生效')}
+}
+function resetAll(){
+  openConfirm('恢复出厂数据','将清除本机全部业务数据改动（客户、地块、台账、申请、额度、还款、预警、用户、参数），恢复至出厂状态。确认继续？',function(){
+    localStorage.removeItem(LS);DB=seedData();saveDB();Object.keys(TBL).forEach(k=>delete TBL[k]);render();toast('已恢复出厂数据');
+  });
+}
+/* 额度测算器（任选客户） */
+function calcPicker(){
+  const opts=DB.customers.map(c=>'<option value="'+c.id+'">'+c.name+'（'+c.id+' · '+c.town+'）</option>').join('');
+  openModal('额度测算器',
+   '<div class="frow"><label>选择客户</label><select id="cpCust" onchange="closeModal();calcLimit(this.value)">'+opts+'</select></div>'+
+   '<div class="note green">按悲观情景公式 L₀ = A × Ŷ × Ppess × δ × κ 测算，并叠加管理档位系数与采期流水动态上调。</div>',
+   '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-p" onclick="closeModal();calcLimit($(\'cpCust\').value)">开始测算</button>');
+}
+
+/* =====================================================================
+   弹窗 / 抽屉 / 表单 辅助
+   ===================================================================== */
+function openModal(title,body,foot){
+  $('overlay').innerHTML='<div class="mask" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-h"><b>'+title+'</b><button class="x" onclick="closeModal()">✕</button></div><div class="modal-b">'+body+'</div>'+(foot?'<div class="modal-f">'+foot+'</div>':'')+'</div></div>';
+}
+function openConfirm(title,html,onOk){
+  window.__onConfirm=onOk;
+  openModal(title,'<div style="font-size:13px;line-height:1.7">'+html+'</div>',
+  '<button class="btn btn-d" onclick="closeModal()">取消</button><button class="btn btn-r" onclick="window.__onConfirm();closeModal()">确认</button>');
+}
+function openDrawer(title,sub,body){
+  $('overlay').innerHTML='<div class="drawer"><div class="drawer-h"><div><b>'+title+'</b><div style="font-size:11px;opacity:.75;margin-top:2px">'+sub+'</div></div><button class="x" onclick="closeDrawer()">✕</button></div><div class="drawer-b">'+body+'</div></div>';
+}
+function closeModal(){$('overlay').innerHTML=''}
+function closeDrawer(){$('overlay').innerHTML=''}
+function kv(k,v){return '<div class="kv"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>'}
+function fInput(id,label,val,req,type,step){
+  return '<div class="frow" id="row_'+id+'"><label>'+label+(req?' <span class="req">*</span>':'')+'</label><input id="'+id+'" type="'+(type||'text')+'" '+(step?'step="'+step+'"':'')+' value="'+(val===undefined||val===null?'':val)+'"><div class="err">该字段为必填项</div></div>';
+}
+function fSelect(id,label,options,val,req,onchange){
+  return '<div class="frow" id="row_'+id+'"><label>'+label+(req?' <span class="req">*</span>':'')+'</label><select id="'+id+'" '+(onchange?'onchange="'+onchange+'"':'')+'>'+options.map(o=>'<option value="'+esc(o)+'"'+(String(o)===String(val)?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select><div class="err">请选择</div></div>';
+}
+function fieldErr(id,msg){const row=$('row_'+id);if(row){row.classList.add('bad');row.querySelector('.err').textContent=msg||'该字段为必填项'}}
+function validate(ids){
+  let ok=true;
+  ids.forEach(id=>{
+    const el=$(id),row=$('row_'+id);
+    if(!el||!row)return;
+    const bad=!String(el.value).trim();
+    row.classList.toggle('bad',bad);
+    if(bad)ok=false;
+  });
+  if(!ok)toast('请完整填写必填项',false);
+  return ok;
+}
+
+/* =====================================================================
+   登录 / 权限 / 路由 / 启动
+   ===================================================================== */
+const MENUS=[
+ {sec:'业务总览'},
+ {id:'dash',name:'数据仪表盘',icon:'M3 12l9-8 9 8M5 10v10h5v-6h4v6h5V10'},
+ {sec:'数据采集'},
+ {id:'collect',name:'数据采集中心',icon:'M4 5h16M4 10h16M4 15h10M4 20h7'},
+ {id:'plots',name:'茶园地块管理',icon:'M9 20l-5.5-2.5v-13L9 7l6-2.5L20.5 7v13L15 17.5 9 20ZM9 7v13M15 4.5v13'},
+ {sec:'信贷业务'},
+ {id:'cust',name:'客户管理',icon:'M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM21 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75'},
+ {id:'apply',name:'授信申请管理',icon:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6ZM14 2v6h6M9 13h6M9 17h6'},
+ {id:'approval',name:'审批流程管理',icon:'m4.5 12.5 5 5 10-11'},
+ {id:'credit',name:'授信额度管理',icon:'M12 2v20M17 6.5c0-2-2.2-3-5-3s-5 1-5 3 2 2.7 5 3.3 5 1.4 5 3.4-2.2 3-5 3-5-1-5-3'},
+ {sec:'风控与运营'},
+ {id:'assess',name:'收益评估中心',icon:'M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Zm10 2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z'},
+ {id:'risk',name:'风险评估',icon:'M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3Z'},
+ {id:'warn',name:'风险预警中心',icon:'M18 8a6 6 0 0 0-12 0c0 7-3 8-3 8h18s-3-1-3-8M10.3 21a2 2 0 0 0 3.4 0'},
+ {id:'repay',name:'还款记录',icon:'M3 10h18M3 6h18a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1ZM7 14h4'},
+ {id:'report',name:'统计报表',icon:'M3 3v18h18M8 16v-5m4 5V8m4 8v-3'},
+ {sec:'系统'},
+ {id:'users',name:'用户与权限',icon:'M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z'},
+ {id:'setting',name:'系统设置',icon:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7.5-3a7.5 7.5 0 0 1-.1 1.2l2 1.6-2 3.4-2.4-1a7.6 7.6 0 0 1-2 1.2l-.4 2.6h-4l-.4-2.6a7.6 7.6 0 0 1-2-1.2l-2.4 1-2-3.4 2-1.6a7.7 7.7 0 0 1 0-2.4l-2-1.6 2-3.4 2.4 1a7.6 7.6 0 0 1 2-1.2L10 3h4l.4 2.6a7.6 7.6 0 0 1 2 1.2l2.4-1 2 3.4-2 1.6c.07.4.1.8.1 1.2Z'}
+];
+let PAGE='dash';
+let CUR=null; // 当前登录用户
+function canAccess(pageId){
+  if(!CUR)return false;
+  const p=DB.perms[CUR.role]||[];
+  return p.includes('*')||p.includes(pageId);
+}
+function renderMenu(){
+  const todo=DB.apps.filter(a=>['待初审','复核中','终审中'].includes(a.status)).length;
+  let html='';
+  MENUS.forEach(m=>{
+    if(m.sec){
+      const groupPages=[];let i=MENUS.indexOf(m)+1;
+      while(i<MENUS.length&&!MENUS[i].sec){groupPages.push(MENUS[i]);i++}
+      if(groupPages.some(x=>canAccess(x.id)))html+='<div class="menu-sec">'+m.sec+'</div>';
+      return;
+    }
+    if(!canAccess(m.id))return;
+    html+='<button class="menu-item '+(PAGE===m.id?'on':'')+'" onclick="go(\''+m.id+'\')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="'+m.icon+'"/></svg>'+m.name+(m.id==='approval'&&todo?'<span class="badge">'+todo+'</span>':'')+'</button>';
+  });
+  $('menu').innerHTML=html;
+  $('todoBadge').textContent=todo;
+  $('todoBadge').style.display=todo&&canAccess('approval')?'':'none';
+}
+function go(p){
+  if(!canAccess(p)){toast('当前角色无权访问该模块',false);return}
+  PAGE=p;closeModal();render();toggleSide(false);window.scrollTo(0,0);
+}
+function render(){
+  if(!canAccess(PAGE)){const first=MENUS.find(m=>!m.sec&&canAccess(m.id));PAGE=first?first.id:'dash'}
+  renderMenu();
+  const P={dash:pageDash,collect:pageCollect,plots:pagePlots,cust:pageCustomers,apply:pageApply,approval:pageApproval,credit:pageCredit,assess:pageAssess,risk:pageRisk,warn:pageWarn,repay:pageRepay,report:pageReport,users:pageUsers,setting:pageSetting};
+  $('content').innerHTML=(P[PAGE]||pageDash)();
+}
+function toggleSide(force){
+  const sb=$('sidebar'),mk=$('maskNav');
+  const open=force!==undefined?force:!sb.classList.contains('open');
+  sb.classList.toggle('open',open);mk.classList.toggle('show',open);
+}
+function globalSearch(kw){
+  if(!kw.trim())return;
+  if(!canAccess('cust')){toast('当前角色无权访问客户管理',false);return}
+  tblState('cust').kw=kw.trim();go('cust');
+}
+function applyUserUI(){
+  $('sideAvatar').textContent=CUR.name.slice(0,1);
+  $('topAvatar').textContent=CUR.name.slice(0,1);
+  $('sideWho').textContent=CUR.name;
+  $('topWho').textContent=CUR.name;
+  $('sideRole').textContent=CUR.org+' · '+CUR.role;
+  $('dropSetting').style.display=canAccess('setting')?'':'none';
+}
+function doLogin(){
+  const u=$('lgUser').value.trim(),p=$('lgPass').value;
+  $('lgUserRow').classList.toggle('bad',!u);
+  $('lgPassRow').classList.toggle('bad',!p);
+  if(!u||!p)return;
+  const user=DB.users.find(x=>x.u===u&&x.pwd===p);
+  if(user&&user.status==='启用'){
+    CUR=user;
+    user.last='2026-10-04 '+new Date().toTimeString().slice(0,5);saveDB();
+    if($('lgRemember').checked){try{localStorage.setItem(LS+'_session',u)}catch(e){}}
+    $('loginWrap').classList.remove('show');$('app').classList.add('show');
+    PAGE='dash';applyUserUI();render();toast('登录成功，'+user.name+'（'+user.role+'）欢迎回来');
+  }else{
+    $('lgPassErr').textContent=user?'该账号已被停用，请联系系统管理员':'账号或密码错误（内置账号 admin / 123456）';
+    $('lgPassRow').classList.add('bad');
+    $('loginCard').classList.add('shake');
+    setTimeout(()=>$('loginCard').classList.remove('shake'),450);
+  }
+}
+function doLogout(){
+  try{localStorage.removeItem(LS+'_session')}catch(e){}
+  CUR=null;
+  $('app').classList.remove('show');$('loginWrap').classList.add('show');
+  $('userDrop').classList.remove('show');
+}
+document.addEventListener('click',function(e){
+  const d=$('userDrop');
+  if(d&&d.classList.contains('show')&&!e.target.closest('.top-user')&&!e.target.closest('.dropdown'))d.classList.remove('show');
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&$('loginWrap').classList.contains('show'))doLogin();
+});
+loadDB();
+$('topDate').textContent='2026年10月4日 星期日';
+(function boot(){
+  let su=null;
+  try{su=localStorage.getItem(LS+'_session')}catch(e){}
+  const user=su?DB.users.find(x=>x.u===su&&x.status==='启用'):null;
+  if(user){CUR=user;$('loginWrap').classList.remove('show');$('app').classList.add('show');applyUserUI();render()}
+})();
+</script>
+</body>
+</html>
